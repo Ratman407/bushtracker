@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111611" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BushTrack" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>BushTrack Prototype</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">V0.1 PROTOTYPE</div>
+        <h1>BushTrack</h1>
+      </div>
+      <div class="level-chip"><span id="levelText">LV 1</span><small id="xpText">0 XP</small></div>
+    </header>
+
+    <main>
+      <section class="hero-card">
+        <div class="hero-copy">
+          <div class="eyebrow">ACTIVE TRAIL</div>
+          <h2 id="activeTitle">Fallow buck</h2>
+          <p id="activeStory">Fresh tracks are heading into timber. Keep moving and close the distance.</p>
+          <div class="distance" id="activeDistance">10,000 steps</div>
+          <div class="progress-track"><div class="progress-fill" id="activeProgress"></div></div>
+        </div>
+        <div class="map-scene" aria-hidden="true">
+          <div class="ridge r1"></div><div class="ridge r2"></div><div class="ridge r3"></div>
+          <div class="trail-line"></div>
+          <div class="map-marker player-marker">YOU</div>
+          <div class="map-marker target-marker" id="mapTarget">BUCK</div>
+          <div class="river-line hidden" id="riverLine"></div>
+        </div>
+      </section>
+
+      <section class="claim-card">
+        <div>
+          <div class="eyebrow">TONIGHT'S CHECK-IN</div>
+          <h3>Claim today's walking</h3>
+          <p>Enter the steps your iPhone shows for today, or use the iPhone Shortcut to import and claim them automatically.</p>
+        </div>
+        <div class="claim-row">
+          <input id="stepsInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 5820" aria-label="Today's steps" />
+          <button class="primary" id="claimBtn">Claim steps</button>
+        </div>
+        <div class="micro" id="claimStatus">No steps claimed today.</div>
+      </section>
+
+      <section class="grid two-col">
+        <article class="mission-card active" id="huntCard">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">MAIN HUNT</div>
+              <h3 id="huntTitle">Fallow buck</h3>
+            </div>
+            <span class="tag" id="huntTag">TRACKING</span>
+          </div>
+          <p id="huntText">A solid buck crossed the track before daylight.</p>
+          <div class="stat-row"><span>Estimated intercept</span><strong id="huntDistance">10,000</strong></div>
+          <button class="secondary" id="selectHuntBtn">Make active</button>
+          <button class="primary hidden" id="shotBtn">Take the shot</button>
+        </article>
+
+        <article class="mission-card locked" id="riverCard">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">SIDE TRAIL</div>
+              <h3>Follow the creek</h3>
+            </div>
+            <span class="tag" id="riverTag">UNDISCOVERED</span>
+          </div>
+          <p id="riverText">You haven't found a watercourse worth following yet.</p>
+          <div class="stat-row"><span>Deep water</span><strong id="riverDistance">—</strong></div>
+          <button class="secondary hidden" id="selectRiverBtn">Make active</button>
+          <button class="primary hidden" id="fishBtn">Fish the hole</button>
+        </article>
+      </section>
+
+      <section class="log-card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">FIELD NOTES</div>
+            <h3>Latest sign</h3>
+          </div>
+          <button class="text-btn" id="resetBtn">Reset prototype</button>
+        </div>
+        <div id="eventLog" class="event-log"></div>
+      </section>
+
+      <section class="trophy-card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">TROPHY CABINET</div>
+            <h3>Your finds</h3>
+          </div>
+          <div class="money" id="cashText">$0</div>
+        </div>
+        <div id="trophyList" class="trophy-list"><div class="empty">Nothing on the wall yet.</div></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="shotModal" role="dialog" aria-modal="true" aria-labelledby="shotTitle">
+    <div class="modal-panel">
+      <div class="eyebrow">SHOT OPPORTUNITY</div>
+      <h2 id="shotTitle">Fallow buck</h2>
+      <p id="shotRangeText">Range: 180 m</p>
+      <div class="aim-box" id="aimBox">
+        <div class="vitals-zone" id="vitalsZone"></div>
+        <div class="aim-marker" id="aimMarker"></div>
+      </div>
+      <p class="micro">Tap SHOT when the marker crosses the vitals.</p>
+      <div class="modal-actions">
+        <button class="secondary" id="cancelShotBtn">Back out</button>
+        <button class="danger" id="fireBtn">SHOT</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="fishModal" role="dialog" aria-modal="true" aria-labelledby="fishTitle">
+    <div class="modal-panel">
+      <div class="eyebrow">DEEP HOLE</div>
+      <h2 id="fishTitle">Something big is sitting under the timber</h2>
+      <p>Pick what you're throwing.</p>
+      <div class="lure-grid" id="lureGrid">
+        <button class="lure selected" data-lure="Spinnerbait">Spinnerbait</button>
+        <button class="lure" data-lure="Surface lure">Surface lure</button>
+        <button class="lure" data-lure="Soft plastic">Soft plastic</button>
+        <button class="lure" data-lure="Bait">Bait</button>
+      </div>
+      <div class="fish-result" id="fishResult">One cast tonight.</div>
+      <div class="modal-actions">
+        <button class="secondary" id="closeFishBtn">Leave it</button>
+        <button class="primary" id="castBtn">Cast</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
