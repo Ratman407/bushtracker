@@ -9,114 +9,198 @@
   <meta name="apple-mobile-web-app-title" content="BushTrack" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-  <title>BushTrack Prototype</title>
+  <link rel="stylesheet" href="style-v03.css" />
+  <title>BushTrack V0.3</title>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">V0.1 PROTOTYPE</div>
+        <div class="eyebrow">V0.3 FIELD TEST</div>
         <h1>BushTrack</h1>
       </div>
       <div class="level-chip"><span id="levelText">LV 1</span><small id="xpText">0 XP</small></div>
     </header>
 
     <main>
-      <section class="hero-card">
-        <div class="hero-copy">
-          <div class="eyebrow">ACTIVE TRAIL</div>
-          <h2 id="activeTitle">Fallow buck</h2>
-          <p id="activeStory">Fresh tracks are heading into timber. Keep moving and close the distance.</p>
-          <div class="distance" id="activeDistance">10,000 steps</div>
-          <div class="progress-track"><div class="progress-fill" id="activeProgress"></div></div>
-        </div>
-        <div class="map-scene" aria-hidden="true">
-          <div class="ridge r1"></div><div class="ridge r2"></div><div class="ridge r3"></div>
-          <div class="trail-line"></div>
-          <div class="map-marker player-marker">YOU</div>
-          <div class="map-marker target-marker" id="mapTarget">BUCK</div>
-          <div class="river-line hidden" id="riverLine"></div>
-        </div>
-      </section>
-
-      <section class="claim-card">
-        <div>
-          <div class="eyebrow">TONIGHT'S CHECK-IN</div>
-          <h3>Claim today's walking</h3>
-          <p>Enter the steps your iPhone shows for today, or use the iPhone Shortcut to import and claim them automatically.</p>
-        </div>
-        <div class="claim-row">
-          <input id="stepsInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 5820" aria-label="Today's steps" />
-          <button class="primary" id="claimBtn">Claim steps</button>
-        </div>
-        <div class="micro" id="claimStatus">No steps claimed today.</div>
-      </section>
-
-      <section class="grid two-col">
-        <article class="mission-card active" id="huntCard">
-          <div class="card-head">
-            <div>
-              <div class="eyebrow">MAIN HUNT</div>
-              <h3 id="huntTitle">Fallow buck</h3>
-            </div>
-            <span class="tag" id="huntTag">TRACKING</span>
+      <section class="tab-page active" data-page="trail">
+        <section class="hero-card">
+          <div class="hero-copy">
+            <div class="eyebrow">ACTIVE TRAIL</div>
+            <h2 id="activeTitle">Fresh deer sign</h2>
+            <p id="activeStory">Fresh tracks are heading into timber.</p>
+            <div class="distance" id="activeDistance">10,000 steps</div>
+            <div class="progress-track"><div class="progress-fill" id="activeProgress"></div></div>
+            <div class="hero-meta" id="activeMeta"></div>
           </div>
-          <p id="huntText">A solid buck crossed the track before daylight.</p>
-          <div class="stat-row"><span>Estimated intercept</span><strong id="huntDistance">10,000</strong></div>
-          <button class="secondary" id="selectHuntBtn">Make active</button>
-          <button class="primary hidden" id="shotBtn">Take the shot</button>
-        </article>
-
-        <article class="mission-card locked" id="riverCard">
-          <div class="card-head">
-            <div>
-              <div class="eyebrow">SIDE TRAIL</div>
-              <h3>Follow the creek</h3>
-            </div>
-            <span class="tag" id="riverTag">UNDISCOVERED</span>
+          <div class="map-scene" aria-hidden="true">
+            <div class="ridge r1"></div><div class="ridge r2"></div><div class="ridge r3"></div>
+            <div class="trail-line"></div>
+            <div class="map-marker player-marker">YOU</div>
+            <div class="map-marker target-marker" id="mapTarget">SIGN</div>
+            <div class="river-line hidden" id="riverLine"></div>
           </div>
-          <p id="riverText">You haven't found a watercourse worth following yet.</p>
-          <div class="stat-row"><span>Deep water</span><strong id="riverDistance">—</strong></div>
-          <button class="secondary hidden" id="selectRiverBtn">Make active</button>
-          <button class="primary hidden" id="fishBtn">Fish the hole</button>
-        </article>
-      </section>
+        </section>
 
-      <section class="log-card">
-        <div class="card-head">
+        <section class="conditions-strip">
+          <div><span>Season</span><strong id="seasonText">Spring</strong></div>
+          <div><span>Weather</span><strong id="weatherText">Clear</strong></div>
+          <div><span>Wind</span><strong id="windText">Light</strong></div>
+          <div><span>Region</span><strong id="regionText">Home block</strong></div>
+        </section>
+
+        <section class="claim-card">
           <div>
-            <div class="eyebrow">FIELD NOTES</div>
-            <h3>Latest sign</h3>
+            <div class="eyebrow">TRAIL CHECK-IN</div>
+            <h3>Claim today's walking</h3>
+            <p>The iPhone Shortcut can import this automatically. Your steps only advance the trail you have marked active.</p>
           </div>
-          <button class="text-btn" id="resetBtn">Reset prototype</button>
-        </div>
-        <div id="eventLog" class="event-log"></div>
+          <div class="claim-row">
+            <input id="stepsInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 5820" aria-label="Today's steps" />
+            <button class="primary" id="claimBtn">Claim steps</button>
+          </div>
+          <div class="micro" id="claimStatus">No steps claimed today.</div>
+          <div class="credit hidden" id="stepCreditBox"></div>
+        </section>
+
+        <section class="choice-card hidden" id="pendingChoiceCard">
+          <div class="eyebrow">UNEXPECTED SIGN</div>
+          <h3 id="pendingChoiceTitle">Fresh pig sign cuts across the creek</h3>
+          <p id="pendingChoiceText"></p>
+          <div class="button-row">
+            <button class="primary" id="chaseChoiceBtn">Follow it</button>
+            <button class="secondary" id="ignoreChoiceBtn">Stay on current trail</button>
+          </div>
+        </section>
+
+        <section class="choice-card hidden" id="encounterStatusCard">
+          <div class="eyebrow">CURRENT ENCOUNTER</div>
+          <h3 id="encounterStatusTitle">Animals ahead</h3>
+          <p id="encounterStatusText"></p>
+          <div class="stat-row"><span id="encounterStatusLabel">Status</span><strong id="encounterStatusValue">Ready</strong></div>
+          <button class="primary" id="encounterActionBtn">Open encounter</button>
+        </section>
+
+        <section class="grid two-col">
+          <article class="mission-card" id="huntCard">
+            <div class="card-head">
+              <div><div class="eyebrow">MAIN HUNT</div><h3 id="huntTitle">Fresh deer sign</h3></div>
+              <span class="tag" id="huntTag">TRACKING</span>
+            </div>
+            <p id="huntText">Fresh tracks lead into broken timber.</p>
+            <div class="stat-row"><span id="huntStatLabel">Estimated intercept</span><strong id="huntDistance">10,000 steps</strong></div>
+            <button class="secondary" id="selectHuntBtn">Make active</button>
+            <button class="secondary hidden" id="callBtn">Use a call</button>
+            <button class="primary hidden" id="encounterBtn">Glass the animals</button>
+          </article>
+
+          <article class="mission-card locked" id="riverCard">
+            <div class="card-head">
+              <div><div class="eyebrow">SIDE TRAIL</div><h3>Follow the creek</h3></div>
+              <span class="tag" id="riverTag">UNDISCOVERED</span>
+            </div>
+            <p id="riverText">You haven't found a watercourse worth following yet.</p>
+            <div class="stat-row"><span>Deep water</span><strong id="riverDistance">—</strong></div>
+            <button class="secondary hidden" id="selectRiverBtn">Make active</button>
+          </article>
+        </section>
+
+        <section id="objectiveSection" class="other-trails hidden">
+          <div class="section-title"><div><div class="eyebrow">OTHER TRAILS</div><h3>Things worth walking back to</h3></div></div>
+          <div id="objectiveList" class="grid two-col"></div>
+        </section>
       </section>
 
-      <section class="trophy-card">
-        <div class="card-head">
-          <div>
-            <div class="eyebrow">TROPHY CABINET</div>
-            <h3>Your finds</h3>
-          </div>
+      <section class="tab-page" data-page="map">
+        <section class="section-title">
+          <div><div class="eyebrow">COUNTRY MAP</div><h2>Places you've found</h2></div>
+          <p>Permanent discoveries stay here. Water, sign and equipment can keep producing new reasons to walk back.</p>
+        </section>
+        <div id="locationList" class="location-grid"></div>
+
+        <section class="panel-card">
+          <div class="card-head"><div><div class="eyebrow">KNOWN ANIMALS</div><h3>Animals still out there</h3></div></div>
+          <div id="knownAnimalList" class="stack-list"></div>
+        </section>
+
+        <section class="panel-card">
+          <div class="card-head"><div><div class="eyebrow">GEAR IN THE FIELD</div><h3>Cameras & nets</h3></div></div>
+          <div id="fieldGearList" class="stack-list"></div>
+        </section>
+      </section>
+
+      <section class="tab-page" data-page="gear">
+        <section class="section-title">
+          <div><div class="eyebrow">GEAR SHED</div><h2>Equipment & tackle</h2></div>
           <div class="money" id="cashText">$0</div>
-        </div>
-        <div id="trophyList" class="trophy-list"><div class="empty">Nothing on the wall yet.</div></div>
+        </section>
+        <section class="panel-card">
+          <div id="inventoryList" class="inventory-grid"></div>
+        </section>
+        <section class="panel-card">
+          <div class="card-head"><div><div class="eyebrow">UPGRADES</div><h3>Spend what you earn</h3></div></div>
+          <div id="shopList" class="shop-list"></div>
+        </section>
+        <section class="panel-card">
+          <div class="card-head"><div><div class="eyebrow">FIELDCRAFT</div><h3>Knowledge from doing it</h3></div></div>
+          <div id="knowledgeList" class="knowledge-list"></div>
+        </section>
+      </section>
+
+      <section class="tab-page" data-page="journal">
+        <section class="log-card">
+          <div class="card-head">
+            <div><div class="eyebrow">FIELD JOURNAL</div><h2>What happened out there</h2></div>
+            <button class="text-btn" id="resetBtn">Reset prototype</button>
+          </div>
+          <div id="eventLog" class="event-log"></div>
+        </section>
+        <section class="trophy-card">
+          <div class="card-head"><div><div class="eyebrow">TROPHY CABINET</div><h3>Personal bests & standout animals</h3></div></div>
+          <div id="bestList" class="best-list"></div>
+          <div id="trophyList" class="trophy-list"></div>
+        </section>
       </section>
     </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="BushTrack sections">
+    <button class="nav-btn active" data-tab="trail"><span>Trail</span></button>
+    <button class="nav-btn" data-tab="map"><span>Map</span></button>
+    <button class="nav-btn" data-tab="gear"><span>Gear</span></button>
+    <button class="nav-btn" data-tab="journal"><span>Journal</span></button>
+  </nav>
+
+  <div class="modal hidden" id="animalModal" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="eyebrow">ANIMALS AHEAD</div>
+      <h2 id="animalModalTitle">You've caught up</h2>
+      <p id="animalModalText">Glass the group and choose what you want to do.</p>
+      <div id="animalChoices" class="animal-choices"></div>
+      <div class="modal-actions"><button class="secondary" id="passAnimalsBtn">Pass and keep hunting</button></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="approachModal" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="eyebrow">PLAN THE APPROACH</div>
+      <h2 id="approachTitle">Pick your line</h2>
+      <p id="approachText">A longer route can give you a much better wind and shot.</p>
+      <div id="approachChoices" class="approach-list"></div>
+      <div class="modal-actions"><button class="secondary" id="cancelApproachBtn">Back</button></div>
+    </div>
   </div>
 
   <div class="modal hidden" id="shotModal" role="dialog" aria-modal="true" aria-labelledby="shotTitle">
     <div class="modal-panel">
       <div class="eyebrow">SHOT OPPORTUNITY</div>
-      <h2 id="shotTitle">Fallow buck</h2>
+      <h2 id="shotTitle">Animal</h2>
       <p id="shotRangeText">Range: 180 m</p>
       <div class="aim-box" id="aimBox">
         <div class="vitals-zone" id="vitalsZone"></div>
         <div class="aim-marker" id="aimMarker"></div>
       </div>
-      <p class="micro">Tap SHOT when the marker crosses the vitals.</p>
+      <p class="micro">Tap SHOT as the marker crosses the vitals. A marginal hit may mean more walking to recover the animal.</p>
       <div class="modal-actions">
         <button class="secondary" id="cancelShotBtn">Back out</button>
         <button class="danger" id="fireBtn">SHOT</button>
@@ -124,25 +208,36 @@
     </div>
   </div>
 
-  <div class="modal hidden" id="fishModal" role="dialog" aria-modal="true" aria-labelledby="fishTitle">
-    <div class="modal-panel">
-      <div class="eyebrow">DEEP HOLE</div>
-      <h2 id="fishTitle">Something big is sitting under the timber</h2>
-      <p>Pick what you're throwing.</p>
-      <div class="lure-grid" id="lureGrid">
-        <button class="lure selected" data-lure="Spinnerbait">Spinnerbait</button>
-        <button class="lure" data-lure="Surface lure">Surface lure</button>
-        <button class="lure" data-lure="Soft plastic">Soft plastic</button>
-        <button class="lure" data-lure="Bait">Bait</button>
-      </div>
-      <div class="fish-result" id="fishResult">One cast tonight.</div>
+  <div class="modal hidden" id="fishModal" role="dialog" aria-modal="true">
+    <div class="modal-panel fish-panel">
+      <div class="eyebrow">FISHING SESSION</div>
+      <h2 id="fishTitle">Deep timber hole</h2>
+      <p id="fishSpotText">Pick what you're throwing. You won't know when the snag ends the session.</p>
+      <div class="lure-grid" id="lureGrid"></div>
+      <div class="fish-session-head"><span id="castCountText">Cast 0</span><span id="fishCountText">0 fish</span></div>
+      <div class="fish-result" id="fishResult">Make your first cast.</div>
+      <div id="fishSessionLog" class="mini-log"></div>
       <div class="modal-actions">
-        <button class="secondary" id="closeFishBtn">Leave it</button>
+        <button class="secondary" id="closeFishBtn">Leave the hole</button>
         <button class="primary" id="castBtn">Cast</button>
       </div>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <div class="modal hidden" id="fightModal" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="eyebrow">GOOD FISH</div>
+      <h2 id="fightTitle">Keep the pressure on</h2>
+      <p id="fightText">Reel when the tension marker is inside the safe zone.</p>
+      <div class="fight-box" id="fightBox">
+        <div class="safe-zone" id="safeZone"></div>
+        <div class="tension-marker" id="tensionMarker"></div>
+      </div>
+      <div class="fight-score" id="fightScore">Good pressure: 0 / 3</div>
+      <div class="modal-actions"><button class="primary" id="reelBtn">REEL</button></div>
+    </div>
+  </div>
+
+  <script src="app-v03.js"></script>
 </body>
 </html>

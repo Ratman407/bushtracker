@@ -1,61 +1,102 @@
-# BushTrack V0.2
+# BushTrack V0.3 — Field Test
 
-A cheap proof-of-concept iPhone web app for the walking-powered hunting/fishing idea.
+BushTrack is a walking-powered hunting, fishing and exploration game prototype designed to run as a free iPhone Home Screen web app.
 
-## What is in V0.2
+## V0.3 game loop
 
-- Starts with a fallow buck about 10,000 steps away.
-- Enter the steps shown by the iPhone at the end of the day.
-- Partial progress carries over. If you do not catch the animal, its overnight movement shifts the next intercept slightly in your favour.
-- After enough hunting progress you discover a shallow creek as a side trail.
-- You can make either the deer trail or creek your active objective before the next day's step claim.
-- Following the creek far enough discovers a permanent deep fishing hole.
-- Reaching the deer unlocks a simple shot mini-game. Extra steps beyond the intercept can give a closer shot.
-- Deep hole has a simple once-per-day fishing encounter.
-- XP, cash and trophies are stored locally on the phone/browser.
-- No login, ads, server or tracking.
+- Your real iPhone steps advance whichever trail/objective you mark active.
+- Main hunts start from sign rather than guaranteeing a trophy animal.
+- Reaching sign reveals a random group: does/hinds, young animals, average males, mature animals, occasional trophies, and sometimes another species mixed in.
+- Pick an animal, then choose a short/risky, medium, or long/downwind approach. The approach itself costs real steps.
+- Animals can bust you. Missed opportunities can become recurring known animals.
+- Marginal shots create a 1,100–3,200 step recovery trail instead of an instant result.
+- Calls can move your target closer, do nothing useful, or reveal another species.
+- While following one objective you can bump fresh pig/goat/deer/rabbit sign and decide whether to chase it or stay on plan.
 
-## Fastest way to put it on an iPhone
+## Fishing V0.3
 
-This is a static web app, so it only needs simple HTTPS hosting. A free static host such as Netlify Drop, Cloudflare Pages or GitHub Pages will work.
+- Permanent fishing spots can be discovered and revisited.
+- A fishing visit gives 10–20 usable casts before the next cast eventually buries in a snag and ends the session.
+- Each cast can be empty or produce any species/size available at that water.
+- The game strongly biases a session toward at least one fish before the snag.
+- Trophy-class fish trigger a simple tension/fight mini-game.
+- Lures can be lost when the final snag ends the session.
+- Fishing pressure builds after a session and fades with time/rain.
+- Weather, lure choice, rod upgrades and fieldcraft affect fishing.
+- After a session, another visit requires a real walk back to the spot.
 
-1. Upload the contents of this folder to a static web host.
-2. Open the resulting HTTPS address in Safari on the iPhone.
-3. Safari Share button -> Add to Home Screen.
-4. Open BushTrack from the new Home Screen icon.
+## Persistent country
 
-Once it has loaded successfully, the service worker caches the prototype for basic offline use.
+Possible permanent discoveries include:
 
-## Step entry and iPhone Shortcut
+- shallow creek and deep timber hole
+- farm dam
+- game trail
+- wallow
+- rabbit warren
+- old hut
+- open ridge
+- creek crossing
+- campsite
+- back-block access later in progression
 
-Manual entry still works, but V0.2 can also accept today's total from an iPhone Shortcut.
+Old huts can contain tackle or other useful finds. Creek exploration can also turn up bait or old tackle.
 
-- `?steps=5820` prefills 5,820 steps and waits for you to tap **Claim steps**.
-- `?steps=5820&claim=1` imports 5,820 and claims it automatically.
-- The app still only allows one claim per calendar day, so re-running the Shortcut cannot double-spend the same day's steps.
+## Trail cameras and yabby nets
 
-### Build the Shortcut on the iPhone
+- Place a camera at suitable permanent locations.
+- Leave it at least another claim/day, then walk back in to check it.
+- Cameras can be blank, show ordinary animals, or relocate a known animal.
+- Set yabby nets at suitable water.
+- Leave them soaking, then physically walk back the next day to check them.
+- Nets can be empty or produce yabbies, XP, game cash and some bait.
 
-After GitHub Pages is live, make a Shortcut called **BushTrack Steps**:
+## Recurring animals and fieldcraft
 
-1. **Find Health Samples**
-   - Type: **Steps**
-   - Filter: **Start Date is Today**
-2. **Calculate Statistics**
-   - Operation: **Sum**
-3. **Round Number**
-   - Round to: **Ones**
-4. **Text**
-   - Put your GitHub Pages address followed by `?steps=`
-   - Insert the **Rounded Number** magic variable
-   - Add `&claim=1` after it
-   - Example: `https://YOURNAME.github.io/bushtrack/?steps=[Rounded Number]&claim=1`
-5. **Open URLs** using the Text from step 4.
+- Mature/rare animals can become named individuals such as a split-tine buck or scarred boar.
+- If they escape, they stay in the Known Animals list and can show up again on sign or trail cameras.
+- Very rare fallow colour variants are possible.
+- Fieldcraft knowledge builds by actually tracking/catching species and gradually improves clues/identification.
+- Binocular upgrades also reveal more before you commit.
 
-The first time it runs, iOS may ask permission for Shortcuts to read Health data.
+## Progression
 
-This lets the phone do all step counting in the background. At the end of the day you run one Shortcut and BushTrack receives the total.
+- Quiet boots: reduce approach spook risk.
+- Better binoculars: better pre-shot animal assessment.
+- Better scope: larger timing window in the shot mini-game.
+- Better rod/reel: easier trophy fish fights.
+- Field pack: better odds of useful exploration finds.
+- Game call: unlocks one call attempt per main hunt.
+- Back-block ute access: later unlock that opens more remote country while keeping all hunting itself step-powered.
+- Camps can be established as permanent remote bases.
+- Remote/back-block hunts are longer and can include red deer.
 
-## Data
+## Seasons, weather and journal
 
-Progress is stored in browser localStorage. Clearing Safari website data, changing browsers, or deleting site data will wipe the prototype progress.
+- Australian seasons are used.
+- Daily simulated weather and wind affect parts of hunting/fishing.
+- Autumn improves the odds of better red stags in the back block.
+- Every meaningful event is stored in the Field Journal.
+- Standout animals/fish go into the Trophy Cabinet and personal bests are tracked.
+
+## Existing V0.2 save
+
+V0.3 looks for the old `bushtrack-v01`/`bushtrack-v02` browser save and migrates the important progress automatically, including XP, cash, current hunt distance, river progress, trophies and journal entries.
+
+Do not clear Safari website data if you want to keep the existing prototype save.
+
+## Updating the existing GitHub Pages site
+
+The current site URL can stay exactly the same, so the iPhone Shortcut does **not** need to change.
+
+Replace the old repository files with the contents of this folder, including the renamed `app-v03.js` and `style-v03.css` files.
+
+After GitHub Pages deploys, open BushTrack. The header should say **V0.3 FIELD TEST**. The new service worker uses a new cache and network-first updates, but an already-installed Home Screen app may need to be fully closed and reopened once or twice before the new service worker takes control.
+
+## Shortcut
+
+The existing shortcut remains:
+
+`https://ratman407.github.io/bushtracker/?steps=[Rounded Number]&claim=1`
+
+No change required.
