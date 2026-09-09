@@ -1,5 +1,9 @@
 /* BushTrack V0.6.1 hotfix: readable shot target + recovery step-credit carryover. */
 (function(){
+  const versionTag=document.querySelector('.topbar .eyebrow');
+  if(versionTag)versionTag.textContent='V0.6.1 SHOT & RECOVERY FIX';
+  document.title='BushTrack V0.6.1';
+
   function addTargetIfNeeded(){
     const box=document.getElementById('aimBox');
     const vitals=document.getElementById('vitalsZone');
@@ -76,6 +80,5 @@
   const fire=document.getElementById('fireBtn');
   if(fire) fire.addEventListener('click',function(){ setTimeout(applyRecoveryCredit,0); });
 
-  // If the player is already sitting on a recovery from V0.6, one tap on Active recovery now consumes banked credit immediately.
   window.BushTrack061={prepareReadableShot:prepareReadableShot,applyRecoveryCredit:applyRecoveryCredit};
 })();
