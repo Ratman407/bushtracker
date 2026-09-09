@@ -9,14 +9,14 @@
   <meta name="apple-mobile-web-app-title" content="BushTrack" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style-v06.css" />
-  <title>BushTrack V0.6</title>
+  <link rel="stylesheet" href="style-v05.css" />
+  <title>BushTrack V0.5</title>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">V0.6 FIELD LOADOUT TEST</div>
+        <div class="eyebrow">V0.5 PERSISTENT WORLD TEST</div>
         <h1>BushTrack</h1>
       </div>
       <div class="level-chip"><span id="levelText">LV 1</span><small id="xpText">0 XP</small></div>
@@ -143,36 +143,6 @@
           <div><div class="eyebrow">GEAR SHED</div><h2>Equipment & tackle</h2></div>
           <div class="money" id="cashText">$0</div>
         </section>
-        <section class="panel-card field-loadout-card">
-          <div class="card-head"><div><div class="eyebrow">CURRENT OUTING</div><h3 id="outingTitle">Field loadout</h3></div><span class="tag" id="outingStatusTag">IN FIELD</span></div>
-          <p id="outingText">Your rifle, ammunition and carried weight now stay with you until you return to camp.</p>
-          <div class="status-grid">
-            <div><span>Base</span><strong id="outingBaseText">Main Camp</strong></div>
-            <div><span>Rifle</span><strong id="outingWeaponText">.30-06</strong></div>
-            <div><span>Ammo</span><strong id="outingAmmoText">5 + 5</strong></div>
-            <div><span>Fatigue</span><strong id="outingFatigueText">Fresh</strong></div>
-            <div><span>Carried load</span><strong id="outingWeightText">—</strong></div>
-            <div><span>Route back</span><strong id="outingReturnText">At camp</strong></div>
-          </div>
-          <div class="button-grid">
-            <button class="primary" id="prepareOutingBtn">Prepare loadout</button>
-            <button class="secondary" id="returnBaseBtn">Return to base</button>
-            <button class="secondary" id="fieldReloadBtn">Reload from spare ammo</button>
-          </div>
-          <p class="micro" id="outingHaulText">No field haul yet.</p>
-        </section>
-
-        <section class="panel-card">
-          <div class="card-head"><div><div class="eyebrow">CAMP STORES</div><h3>Food, hides, bait & ammunition</h3></div></div>
-          <div id="campStoreList" class="camp-store-list"></div>
-          <div class="button-grid">
-            <button class="secondary" id="sellHidesBtn">Sell stored hides</button>
-            <button class="secondary" id="sellMeatBtn">Sell 5 kg meat</button>
-            <button class="secondary" id="eatYabbiesBtn">Use yabbies as camp food</button>
-          </div>
-          <p class="micro">Remote camps consume food each day you base yourself there. If they run dry, the camp goes inactive until you walk supplies back in.</p>
-        </section>
-
         <section class="panel-card">
           <div id="inventoryList" class="inventory-grid"></div>
         </section>
@@ -215,7 +185,7 @@
       <section class="tab-page" data-page="settings">
         <section class="section-title">
           <div><div class="eyebrow">SETTINGS & SAVE DATA</div><h2>Keep the bastard safe</h2></div>
-          <p>V0.6 keeps the V0.5 backend and adds realistic field loadouts, persistent ammo, glassing, camps, recovery quality and a working hide/meat/yabby economy.</p>
+          <p>V0.5 keeps the V0.4 save protection and adds persistent-world backend, weekly conditioning and field-test diagnostics.</p>
         </section>
 
         <section class="panel-card">
@@ -326,12 +296,9 @@
         <div class="vitals-zone" id="vitalsZone"></div>
         <div class="aim-marker" id="aimMarker"></div>
       </div>
-      <p class="micro" id="shotAdviceText">Tap SHOT as the marker crosses the vitals. Range, rifle, fatigue and support all affect the window.</p>
-      <div class="shot-loadout" id="shotLoadoutText"></div>
+      <p class="micro">Tap SHOT as the marker crosses the vitals. A marginal hit may mean more walking to recover the animal.</p>
       <div class="modal-actions">
         <button class="secondary" id="cancelShotBtn">Back out</button>
-        <button class="secondary hidden" id="reloadShotBtn">Reload</button>
-        <button class="secondary hidden" id="stalkCloserBtn">Stalk closer</button>
         <button class="danger" id="fireBtn">SHOT</button>
       </div>
     </div>
@@ -367,29 +334,6 @@
     </div>
   </div>
 
-  <div class="modal hidden" id="loadoutModal" role="dialog" aria-modal="true">
-    <div class="modal-panel">
-      <div class="eyebrow">PREPARE OUTING</div>
-      <h2>Choose what you carry</h2>
-      <p>Rifle choice changes practical shot range, carried weight, ammo capacity and carcass damage. You cannot swap it in the field.</p>
-      <div id="weaponChoices" class="weapon-choices"></div>
-      <label class="form-label">Spare rounds <select id="spareAmmoSelect"></select></label>
-      <label class="toggle-row"><span>Carry binoculars</span><input type="checkbox" id="carryBinosToggle" checked></label>
-      <div class="loadout-preview" id="loadoutPreview">Choose a rifle.</div>
-      <div class="modal-actions"><button class="secondary" id="cancelLoadoutBtn">Cancel</button><button class="primary" id="startOutingBtn">Start outing</button></div>
-    </div>
-  </div>
-
-  <div class="modal hidden" id="glassModal" role="dialog" aria-modal="true">
-    <div class="modal-panel">
-      <div class="eyebrow">GLASS THE COUNTRY</div>
-      <h2 id="glassTitle">Open ridge</h2>
-      <p id="glassText">Work the faces and timber edges. You only get an imperfect look at what is actually moving.</p>
-      <div id="glassChoices" class="animal-choices"></div>
-      <div class="modal-actions"><button class="secondary" id="closeGlassBtn">Keep current plan</button></div>
-    </div>
-  </div>
-
   <div class="modal hidden" id="importModal" role="dialog" aria-modal="true">
     <div class="modal-panel">
       <div class="eyebrow">RESTORE BACKUP</div>
@@ -403,6 +347,6 @@
     </div>
   </div>
 
-  <script src="app-v06.js"></script>
+  <script src="app-v05.js"></script>
 </body>
 </html>
