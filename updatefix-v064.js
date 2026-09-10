@@ -1,7 +1,13 @@
-/* BushTrack V0.6.4: suppress false update banners caused by same-version service-worker refreshes. */
+/* BushTrack V0.6.4: definitive update-banner guard. Service-worker events may request a banner, but it is only visible after version.json confirms a genuinely newer version. */
 (function(){
   const CURRENT_VERSION='0.6.4';
-  let checking=false;
+
+  if(!document.getElementById('btUpdateBannerGuardStyle')){
+    const style=document.createElement('style');
+    style.id='btUpdateBannerGuardStyle';
+    style.textContent='#updateBanner:not([data-bt-confirmed-update="true"]){display:none!important}';
+    document.head.appendChild(style);
+  }
 
   async function serverVersion(){
     try{
@@ -12,38 +18,51 @@
     }catch(e){return null;}
   }
 
-  async function reconcileUpdateBanner(showCurrent=false){
-    if(checking)return;
-    checking=true;
-    try{
-      const banner=document.getElementById('updateBanner');
-      const text=document.getElementById('updateBannerText');
-      const server=await serverVersion();
-      if(!server)return;
-      if(server===CURRENT_VERSION){
-        if(banner)banner.classList.add('hidden');
-        if(showCurrent)alert('BushTrack '+CURRENT_VERSION+' is current.');
-      }else{
-        if(text)text.textContent='BushTrack '+server+' is available. Reload to update the game code; your save stays intact.';
-        if(banner)banner.classList.remove('hidden');
-      }
-    }finally{checking=false;}
+  function hideFalseBanner(){
+    const banner=document.getElementById('updateBanner');
+    if(!banner)return;
+    banner.removeAttribute('data-bt-confirmed-update');
+    banner.classList.add('hidden');
   }
 
-  try{
-    checkForUpdate=async function(showCurrent=false){return reconcileUpdateBanner(showCurrent);};
-  }catch(e){}
+  async function reconcileUpdateBanner(showCurrent=false){
+    const banner=document.getElementById('updateBanner');
+    const text=document.getElementById('updateBannerText');
+    const server=await serverVersion();
+    if(!server){
+      hideFalseBanner();
+      if(showCurrent)alert('Could not check for an update right now.');
+      return;
+    }
+    if(server===CURRENT_VERSION){
+      hideFalseBanner();
+      if(showCurrent)alert('BushTrack '+CURRENT_VERSION+' is current.');
+      return;
+    }
+    if(text)text.textContent='BushTrack '+server+' is available. Reload to update the game code; your save stays intact.';
+    if(banner){
+      banner.setAttribute('data-bt-confirmed-update','true');
+      banner.classList.remove('hidden');
+    }
+  }
+
+  try{checkForUpdate=async function(showCurrent=false){return reconcileUpdateBanner(showCurrent);};}catch(e){}
 
   const banner=document.getElementById('updateBanner');
-  const bannerText=document.getElementById('updateBannerText');
   if(banner){
+    hideFalseBanner();
     const observer=new MutationObserver(function(){
-      if(!banner.classList.contains('hidden'))setTimeout(function(){reconcileUpdateBanner(false);},10);
+      if(!banner.classList.contains('hidden')&&banner.getAttribute('data-bt-confirmed-update')!=='true'){
+        banner.classList.add('hidden');
+        setTimeout(function(){reconcileUpdateBanner(false);},25);
+      }
     });
     observer.observe(banner,{attributes:true,attributeFilter:['class']});
-    if(bannerText)observer.observe(bannerText,{childList:true,characterData:true,subtree:true});
   }
 
-  setTimeout(function(){reconcileUpdateBanner(false);},50);
+  /* Catch old in-flight V0.6.0 checks and late service-worker controller events. */
+  [0,100,350,1000,2500,5000].forEach(function(ms){setTimeout(function(){reconcileUpdateBanner(false);},ms);});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')setTimeout(function(){reconcileUpdateBanner(false);},50);});
+
   window.BushTrack064UpdateFix={reconcileUpdateBanner};
 })();
