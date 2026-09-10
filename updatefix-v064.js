@@ -1,68 +1,59 @@
-/* BushTrack V0.6.4: definitive update-banner guard. Service-worker events may request a banner, but it is only visible after version.json confirms a genuinely newer version. */
+/* BushTrack V0.6.4: automatic update banner disabled. Manual update checks only. */
 (function(){
   const CURRENT_VERSION='0.6.4';
 
-  if(!document.getElementById('btUpdateBannerGuardStyle')){
+  function killBanner(){
+    const banner=document.getElementById('updateBanner');
+    if(!banner)return;
+    banner.classList.add('hidden');
+    banner.setAttribute('aria-hidden','true');
+    banner.style.setProperty('display','none','important');
+  }
+
+  /* Permanently prevent old app/service-worker listeners from making the banner visible. */
+  if(!document.getElementById('btUpdateBannerKillStyle')){
     const style=document.createElement('style');
-    style.id='btUpdateBannerGuardStyle';
-    style.textContent='#updateBanner:not([data-bt-confirmed-update="true"]){display:none!important}';
+    style.id='btUpdateBannerKillStyle';
+    style.textContent='#updateBanner{display:none!important}';
     document.head.appendChild(style);
   }
 
-  async function serverVersion(){
-    try{
-      const r=await fetch('./version.json?t='+Date.now(),{cache:'no-store'});
-      if(!r.ok)return null;
-      const j=await r.json();
-      return j&&j.version?String(j.version):null;
-    }catch(e){return null;}
-  }
-
-  function hideFalseBanner(){
-    const banner=document.getElementById('updateBanner');
-    if(!banner)return;
-    banner.removeAttribute('data-bt-confirmed-update');
-    banner.classList.add('hidden');
-  }
-
-  async function reconcileUpdateBanner(showCurrent=false){
-    const banner=document.getElementById('updateBanner');
-    const text=document.getElementById('updateBannerText');
-    const server=await serverVersion();
-    if(!server){
-      hideFalseBanner();
-      if(showCurrent)alert('Could not check for an update right now.');
-      return;
-    }
-    if(server===CURRENT_VERSION){
-      hideFalseBanner();
-      if(showCurrent)alert('BushTrack '+CURRENT_VERSION+' is current.');
-      return;
-    }
-    if(text)text.textContent='BushTrack '+server+' is available. Reload to update the game code; your save stays intact.';
-    if(banner){
-      banner.setAttribute('data-bt-confirmed-update','true');
-      banner.classList.remove('hidden');
-    }
-  }
-
-  try{checkForUpdate=async function(showCurrent=false){return reconcileUpdateBanner(showCurrent);};}catch(e){}
-
+  killBanner();
   const banner=document.getElementById('updateBanner');
   if(banner){
-    hideFalseBanner();
-    const observer=new MutationObserver(function(){
-      if(!banner.classList.contains('hidden')&&banner.getAttribute('data-bt-confirmed-update')!=='true'){
-        banner.classList.add('hidden');
-        setTimeout(function(){reconcileUpdateBanner(false);},25);
-      }
-    });
-    observer.observe(banner,{attributes:true,attributeFilter:['class']});
+    const observer=new MutationObserver(killBanner);
+    observer.observe(banner,{attributes:true,childList:true,subtree:true});
   }
 
-  /* Catch old in-flight V0.6.0 checks and late service-worker controller events. */
-  [0,100,350,1000,2500,5000].forEach(function(ms){setTimeout(function(){reconcileUpdateBanner(false);},ms);});
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')setTimeout(function(){reconcileUpdateBanner(false);},50);});
+  async function manualCheck(){
+    try{
+      const r=await fetch('./version.json?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      const server=j&&j.version?String(j.version):null;
+      if(!server)throw new Error('No version returned');
+      if(server===CURRENT_VERSION)alert('BushTrack '+CURRENT_VERSION+' is current.');
+      else alert('BushTrack '+server+' is available. Reload the page to update; your save stays intact.');
+    }catch(e){
+      alert('Could not check for an update right now.');
+    }finally{
+      killBanner();
+    }
+  }
 
-  window.BushTrack064UpdateFix={reconcileUpdateBanner};
+  /* Automatic calls now do nothing; the Save-tab button still works because it calls with true. */
+  try{
+    checkForUpdate=async function(showCurrent=false){
+      killBanner();
+      if(showCurrent)return manualCheck();
+      return null;
+    };
+  }catch(e){}
+
+  /* Old in-flight events can still fire during this page load, so keep killing it for a few seconds. */
+  [0,50,150,400,1000,2500,5000,10000].forEach(ms=>setTimeout(killBanner,ms));
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')killBanner();});
+  window.addEventListener('focus',killBanner);
+
+  window.BushTrack064UpdateFix={killBanner,manualCheck};
 })();
