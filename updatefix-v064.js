@@ -2,15 +2,7 @@
 (function(){
   const CURRENT_VERSION='0.6.4';
 
-  function killBanner(){
-    const banner=document.getElementById('updateBanner');
-    if(!banner)return;
-    banner.classList.add('hidden');
-    banner.setAttribute('aria-hidden','true');
-    banner.style.setProperty('display','none','important');
-  }
-
-  /* Permanently prevent old app/service-worker listeners from making the banner visible. */
+  /* CSS alone is enough to suppress the old automatic banner without watching/mutating it. */
   if(!document.getElementById('btUpdateBannerKillStyle')){
     const style=document.createElement('style');
     style.id='btUpdateBannerKillStyle';
@@ -18,11 +10,11 @@
     document.head.appendChild(style);
   }
 
-  killBanner();
-  const banner=document.getElementById('updateBanner');
-  if(banner){
-    const observer=new MutationObserver(killBanner);
-    observer.observe(banner,{attributes:true,childList:true,subtree:true});
+  function killBanner(){
+    const banner=document.getElementById('updateBanner');
+    if(!banner)return;
+    if(!banner.classList.contains('hidden'))banner.classList.add('hidden');
+    if(banner.getAttribute('aria-hidden')!=='true')banner.setAttribute('aria-hidden','true');
   }
 
   async function manualCheck(){
@@ -41,7 +33,7 @@
     }
   }
 
-  /* Automatic calls now do nothing; the Save-tab button still works because it calls with true. */
+  /* Automatic checks no longer display anything. The Save-tab manual button still works. */
   try{
     checkForUpdate=async function(showCurrent=false){
       killBanner();
@@ -50,8 +42,8 @@
     };
   }catch(e){}
 
-  /* Old in-flight events can still fire during this page load, so keep killing it for a few seconds. */
-  [0,50,150,400,1000,2500,5000,10000].forEach(ms=>setTimeout(killBanner,ms));
+  killBanner();
+  [0,250,1000,3000].forEach(ms=>setTimeout(killBanner,ms));
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')killBanner();});
   window.addEventListener('focus',killBanner);
 
