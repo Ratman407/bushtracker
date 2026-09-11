@@ -25,6 +25,7 @@
     const s=(safeText(ev?.title)+' '+safeText(ev?.text)).toLowerCase();
     if(s.includes('camera'))return A.camera;
     if(s.includes('yabby')||s.includes('net'))return A.yabby;
+    if(s.includes('snagged')||s.includes('snag'))return A.deepHole;
     if(s.includes('deep water')||s.includes('fishing spot')||s.includes('back at the water'))return A.deepHole;
     if(s.includes('new place')||s.includes('map'))return A.map;
     if(s.includes('fish')||s.includes('bass')||s.includes('eel')||s.includes('carp')||s.includes('perch'))return speciesAsset('',s);
@@ -302,7 +303,6 @@
     }catch(e){console.warn('BushTrack visual layer',e);}
   }
 
-  /* Wrap the current render only after all V0.6.x hotfix/stat layers are already loaded. */
   try{
     const priorRender=render;
     render=function(){const r=priorRender.apply(this,arguments);enhance();return r;};
