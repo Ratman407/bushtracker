@@ -1,25 +1,14 @@
-const CACHE='bushtrack-v070-visual-fix1-cache';
+const CACHE='bushtrack-v070-visual-fix2-cache';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css',
   './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js',
   './manifest.webmanifest','./version.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png',
   './fallback-v05.html','./style-v05.css','./app-v05.js','./fallback-v04.html','./style-v04.css','./app-v04.js',
-  './assets/visual/bass.webp',
-  './assets/visual/camp-sunset.webp',
-  './assets/visual/country-map.webp',
-  './assets/visual/creek-hero.webp',
-  './assets/visual/deep-hole.webp',
-  './assets/visual/deer-sign.webp',
-  './assets/visual/deer.webp',
-  './assets/visual/eel.webp',
-  './assets/visual/hardbody.webp',
-  './assets/visual/line.webp',
-  './assets/visual/pig.webp',
-  './assets/visual/rabbit.webp',
-  './assets/visual/soft-plastic.webp',
-  './assets/visual/spinnerbait.webp',
-  './assets/visual/trail-camera.webp',
-  './assets/visual/yabby-net.webp'
+  './assets/visual/bass.webp','./assets/visual/camp-sunset.webp','./assets/visual/country-map.webp',
+  './assets/visual/creek-hero.webp','./assets/visual/deep-hole.webp','./assets/visual/deer-sign.webp',
+  './assets/visual/deer.webp','./assets/visual/eel.webp','./assets/visual/hardbody.webp','./assets/visual/line.webp',
+  './assets/visual/pig.webp','./assets/visual/rabbit.webp','./assets/visual/soft-plastic.webp',
+  './assets/visual/spinnerbait.webp','./assets/visual/trail-camera.webp','./assets/visual/yabby-net.webp'
 ];
 
 self.addEventListener('install',event=>{
@@ -49,15 +38,21 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
+  if(url.pathname.includes('/assets/visual/')){
+    event.respondWith(
+      fetch(event.request,{cache:'no-store'}).then(response=>{
+        if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}
+        return response;
+      }).catch(()=>caches.match(event.request).then(r=>r||new Response('',{status:404,statusText:'Not Found'})))
+    );
+    return;
+  }
+
   if(url.pathname.endsWith('/app-v06.js')){
     event.respondWith(
       Promise.all([
-        textFrom('./app-v06.js'),
-        textFrom('./hotfix-v061.js'),
-        textFrom('./stats-v064.js'),
-        textFrom('./updatefix-v070.js'),
-        textFrom('./visual-v070.js'),
-        textFrom('./visualfix-v070.js')
+        textFrom('./app-v06.js'),textFrom('./hotfix-v061.js'),textFrom('./stats-v064.js'),
+        textFrom('./updatefix-v070.js'),textFrom('./visual-v070.js'),textFrom('./visualfix-v070.js')
       ]).then(parts=>new Response(parts.join('\n\n'),{
         headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store'}
       }))
@@ -67,11 +62,8 @@ self.addEventListener('fetch',event=>{
 
   if(url.pathname.endsWith('/style-v06.css')){
     event.respondWith(
-      Promise.all([
-        textFrom('./style-v06.css'),
-        textFrom('./style-v061.css'),
-        textFrom('./visual-v070.css')
-      ]).then(parts=>new Response(parts.join('\n\n'),{
+      Promise.all([textFrom('./style-v06.css'),textFrom('./style-v061.css'),textFrom('./visual-v070.css')])
+      .then(parts=>new Response(parts.join('\n\n'),{
         headers:{'Content-Type':'text/css; charset=utf-8','Cache-Control':'no-store'}
       }))
     );
@@ -80,12 +72,9 @@ self.addEventListener('fetch',event=>{
 
   event.respondWith(
     fetch(event.request).then(response=>{
-      const copy=response.clone();
-      caches.open(CACHE).then(c=>c.put(event.request,copy));
-      return response;
+      const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));return response;
     }).catch(async()=>{
-      const cached=await caches.match(event.request);
-      if(cached)return cached;
+      const cached=await caches.match(event.request);if(cached)return cached;
       if(event.request.mode==='navigate')return caches.match('./index.html');
       return new Response('',{status:404,statusText:'Not Found'});
     })

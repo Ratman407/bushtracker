@@ -1,8 +1,9 @@
-/* BushTrack V0.7.0 visual asset repair: crisp vector map + broken-image recovery. */
+/* BushTrack V0.7.0 visual asset repair v2: crisp map + cache-busted real images. */
 (function(){
   'use strict';
-  if(window.BushTrackVisualFix070)return;
+  if(window.BushTrackVisualFix070v2)return;
 
+  const ASSET_REV='070fix2';
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#142417"/><stop offset=".55" stop-color="#1b2b1c"/><stop offset="1" stop-color="#101b13"/></linearGradient>
@@ -25,28 +26,43 @@
   function applyMap(){
     const api=window.BushTrackVisual070;
     if(api&&api.assets)api.assets.map=mapUri;
-    document.querySelectorAll('.bt70-map-image').forEach(el=>{el.style.backgroundImage=`url("${mapUri}")`;});
+    document.querySelectorAll('.bt70-map-image').forEach(el=>{
+      el.style.backgroundImage=`url("${mapUri}")`;
+      el.style.backgroundColor='#132017';
+      el.style.backgroundSize='cover';
+      el.style.backgroundPosition='center';
+    });
   }
 
-  function repairImage(img){
+  function freshAssetUrl(src){
+    if(!src || !src.includes('assets/visual/'))return src;
+    const clean=src.split('?')[0];
+    return clean+'?v='+ASSET_REV;
+  }
+  function refreshImages(root=document){
+    root.querySelectorAll('img').forEach(img=>{
+      const src=img.getAttribute('src')||'';
+      if(!src.includes('assets/visual/'))return;
+      img.classList.remove('bt70-image-missing');
+      if(img.parentElement)img.parentElement.classList.remove('bt70-image-missing');
+      img.style.removeProperty('display');
+      const next=freshAssetUrl(src);
+      if(next!==src)img.src=next;
+    });
+  }
+  document.addEventListener('error',e=>{
+    const img=e.target;
     if(!(img instanceof HTMLImageElement))return;
     const src=img.getAttribute('src')||'';
-    if(!src.includes('assets/visual/')){img.style.display='none';return;}
-    if(img.dataset.bt70Retry==='1'){
-      img.style.display='none';
-      const parent=img.parentElement;if(parent)parent.classList.add('bt70-image-missing');
-      return;
-    }
-    img.dataset.bt70Retry='1';
-    img.src=src.split('?')[0]+'?v=070fix1';
-  }
+    if(!src.includes('assets/visual/'))return;
+    if(!src.includes('v='+ASSET_REV))img.src=freshAssetUrl(src);
+  },true);
 
-  document.addEventListener('error',e=>{if(e.target instanceof HTMLImageElement)repairImage(e.target);},true);
   const style=document.createElement('style');
-  style.textContent=`.bt70-map-image{background-color:#132017!important;background-size:cover!important;background-position:center!important}.bt70-image-missing{background:linear-gradient(135deg,#152118,#0c120e)!important}.bt70-image-missing:before{content:'Image unavailable';display:block;color:#7f8c80;font-size:11px;padding:12px}`;
+  style.textContent='.bt70-map-image{background-color:#132017!important;background-size:cover!important;background-position:center!important}.bt70-image-missing:before{content:none!important}';
   document.head.appendChild(style);
-  applyMap();
-  setTimeout(applyMap,100);setTimeout(applyMap,800);
-  window.addEventListener('focus',applyMap);
-  window.BushTrackVisualFix070={applyMap,repairImage};
+  applyMap();refreshImages();
+  [120,700,1800].forEach(ms=>setTimeout(()=>{applyMap();refreshImages();},ms));
+  window.addEventListener('focus',()=>{applyMap();refreshImages();});
+  window.BushTrackVisualFix070v2={applyMap,refreshImages};
 })();
