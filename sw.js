@@ -1,4 +1,4 @@
-const CACHE='bushtrack-v070-visual-fix2-cache';
+const CACHE='bushtrack-v070-visual-fix3-cache';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css',
   './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js',
