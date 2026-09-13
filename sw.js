@@ -1,7 +1,7 @@
-const CACHE='bushtrack-v070-visual-fix3-cache';
+const CACHE='bushtrack-v070-approach-feedback1-cache';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css',
-  './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js',
+  './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js','./approachfix-v070.js',
   './manifest.webmanifest','./version.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png',
   './fallback-v05.html','./style-v05.css','./app-v05.js','./fallback-v04.html','./style-v04.css','./app-v04.js',
   './assets/visual/bass.webp','./assets/visual/camp-sunset.webp','./assets/visual/country-map.webp',
@@ -52,7 +52,8 @@ self.addEventListener('fetch',event=>{
     event.respondWith(
       Promise.all([
         textFrom('./app-v06.js'),textFrom('./hotfix-v061.js'),textFrom('./stats-v064.js'),
-        textFrom('./updatefix-v070.js'),textFrom('./visual-v070.js'),textFrom('./visualfix-v070.js')
+        textFrom('./updatefix-v070.js'),textFrom('./visual-v070.js'),textFrom('./visualfix-v070.js'),
+        textFrom('./approachfix-v070.js')
       ]).then(parts=>new Response(parts.join('\n\n'),{
         headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store'}
       }))
