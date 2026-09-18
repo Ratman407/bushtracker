@@ -4,7 +4,7 @@
   if(window.BushTrackApproachFeedback070)return;
 
   function showResult(title,text,buttonLabel,action,eyebrow){
-    const api=window.BushTrack063;
+    const api=window.BushTrack064||window.BushTrack063;
     if(api&&typeof api.showFieldResult==='function'){
       api.showFieldResult(title,text,buttonLabel||'Continue',action||null,eyebrow||'APPROACH');
     }
@@ -61,7 +61,6 @@
         if(!snap)return;
         const s=snap;snap=null;
         const e=state&&state.currentEncounter;
-        /* If banked steps instantly finished the approach, resolveApproach already shows the real result. */
         if(!e||e.id!==s.id||e.stage!=='approach')return;
         const remaining=Math.max(0,Number(e.approachRemaining||0));
         const used=Math.max(0,s.steps-remaining);
@@ -74,5 +73,27 @@
     });
   }
 
-  window.BushTrackApproachFeedback070={version:'1'};
+  /* Hero objective buttons are rendered outside #objectiveList. Some builds do not carry
+     data-objective on the hero button, so the V0.6.4 hotfix could miss Walk back to fish. */
+  document.addEventListener('click',function(ev){
+    const b=ev.target&&ev.target.closest?ev.target.closest('button'):null;
+    if(!b)return;
+    const label=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    if(!label.includes('walk back to fish'))return;
+    setTimeout(function(){
+      try{
+        const api=window.BushTrack064;
+        if(!api||typeof api.applyCreditToObjective!=='function'||!state)return;
+        let id=(state.active&&state.active.kind==='objective')?state.active.id:null;
+        if(!id){
+          const pending=(state.objectives||[]).filter(function(o){return !o.complete;});
+          const fish=pending.find(function(o){return /fish|timber hole|deep/i.test(String(o.title||''));});
+          if(fish)id=fish.id;
+        }
+        if(id)api.applyCreditToObjective(id);
+      }catch(err){console.error('BushTrack walk-back-to-fish patch',err);}
+    },0);
+  });
+
+  window.BushTrackApproachFeedback070={version:'2'};
 })();
