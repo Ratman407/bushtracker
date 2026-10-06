@@ -1,6 +1,30 @@
-/* BushTrack V0.7.6: camp controls fixed after every render. */
+/* BushTrack V0.7.7: unify the permanent Sheltered campsite with the ammunition store. */
 (function(){
-  const PATCH_VERSION='0.7.6';
+  const PATCH_VERSION='0.7.7';
+
+  function unifyPermanentCamp(){
+    try{
+      if(!window.state)return;
+      state.campStores=state.campStores||{};
+      const main=state.campStores.main||(typeof freshStore==='function'?freshStore('Sheltered campsite'):{name:'Sheltered campsite',active:true,ammo:{}});
+      main.name='Sheltered campsite';main.active=true;main.ammo=main.ammo||{};
+      const oldKey='camp:campsite',old=state.campStores[oldKey];
+      state.meta=state.meta||{};
+      if(old&&!state.meta.shelteredCampUnified077){
+        old.ammo=old.ammo||{};
+        for(const id of ['22lr','44lever','223','3006']) main.ammo[id]=Math.max(0,Number(main.ammo[id]||0))+Math.max(0,Number(old.ammo[id]||0));
+        main.meatKg=Math.max(0,Number(main.meatKg||0))+Math.max(0,Number(old.meatKg||0));
+        main.scrapsKg=Math.max(0,Number(main.scrapsKg||0))+Math.max(0,Number(old.scrapsKg||0));
+        main.yabbies=Math.max(0,Number(main.yabbies||0))+Math.max(0,Number(old.yabbies||0));
+        main.hides=[...(main.hides||[]),...(old.hides||[])];
+        state.meta.shelteredCampUnified077=true;
+        if(typeof addEvent==='function')addEvent('Camp stores repaired','Sheltered campsite is now the permanent base. Ammunition and supplies previously split between Main Camp and the campsite were combined here.');
+      }
+      if(state.expedition&&state.expedition.baseId===oldKey)state.expedition.baseId='main';
+      try{currentBaseName=function(){return currentStoreKey()==='main'?'Sheltered campsite':(baseLocationForKey()?.name||storeForKey().name||'Remote Camp');};}catch(e){}
+    }catch(e){console.error('BushTrack permanent-camp migration',e);}
+  }
+
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
   function validPastDay(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&day<localDayKey();}
   function ensureBackfillUI(){
@@ -38,8 +62,9 @@
     const field=document.getElementById('fieldReloadBtn');if(field&&!e.active)field.classList.add('hidden');
     const ret=document.getElementById('returnBaseBtn');if(ret&&!e.active)ret.classList.add('hidden');
   }
-  const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
+  unifyPermanentCamp();
+  const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
   document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>setTimeout(ensureCampAmmoButton,0));
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.6 CAMP CONTROL FIX';document.title='BushTrack V0.7.6';setTimeout(()=>{ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
+  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.7 CAMP STORE FIX';document.title='BushTrack V0.7.7';setTimeout(()=>{unifyPermanentCamp();save();render();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
 })();
