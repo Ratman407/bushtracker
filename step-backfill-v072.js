@@ -1,6 +1,6 @@
-/* BushTrack V0.7.5: missed-day backfill + camp return + correct camp ammo/loadout flow. */
+/* BushTrack V0.7.6: camp controls fixed after every render. */
 (function(){
-  const PATCH_VERSION='0.7.5';
+  const PATCH_VERSION='0.7.6';
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
   function validPastDay(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&day<localDayKey();}
   function ensureBackfillUI(){
@@ -38,7 +38,8 @@
     const field=document.getElementById('fieldReloadBtn');if(field&&!e.active)field.classList.add('hidden');
     const ret=document.getElementById('returnBaseBtn');if(ret&&!e.active)ret.classList.add('hidden');
   }
-  const oldRenderOuting=window.renderOuting;if(typeof oldRenderOuting==='function')window.renderOuting=function(){oldRenderOuting.apply(this,arguments);ensureCampAmmoButton();};
+  const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
+  document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>setTimeout(ensureCampAmmoButton,0));
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.5 CAMP LOADOUT FIX';document.title='BushTrack V0.7.5';setTimeout(()=>{ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
+  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.6 CAMP CONTROL FIX';document.title='BushTrack V0.7.6';setTimeout(()=>{ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
 })();
