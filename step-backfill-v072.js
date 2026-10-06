@@ -4,7 +4,7 @@
 
   function unifyPermanentCamp(){
     try{
-      if(!window.state)return;
+      if(!state)return;
       state.campStores=state.campStores||{};
       const main=state.campStores.main||(typeof freshStore==='function'?freshStore('Sheltered campsite'):{name:'Sheltered campsite',active:true,ammo:{}});
       main.name='Sheltered campsite';main.active=true;main.ammo=main.ammo||{};
@@ -28,7 +28,7 @@
 
   function recoverCampAmmo0712(){
     try{
-      if(!window.state)return;
+      if(!state)return;
       state.meta=state.meta||{};
       if(state.meta.ammoRecovered0712)return;
       state.campStores=state.campStores||{};
@@ -68,7 +68,7 @@
 
   function forcePermanentAmmoStore0712(){
     try{
-      if(!window.state)return;
+      if(!state)return;
       state.campStores=state.campStores||{};
       const main=state.campStores.main||(state.campStores.main={name:'Sheltered campsite',active:true,foodKg:0,meatKg:0,scrapsKg:0,yabbies:0,hides:[],ammo:{}});
       main.name='Sheltered campsite';main.active=true;main.ammo=main.ammo||{};
@@ -99,7 +99,7 @@
     return `<article class="location-card main-camp-return-card"><div class="location-copy"><div class="eyebrow">PERMANENT BASE</div><h3>${esc(base)}</h3><p>Your armoury, purchased ammunition and stored supplies live here. Return to camp before changing loadout or drawing fresh ammunition.</p><div class="stat-row"><span>Route back</span><strong>${active?(dist>0?'~'+fmt(dist)+' steps':'At camp'):'At camp'}</strong></div><button class="${active?'primary':'secondary'}" id="mapReturnMainCampBtn" ${active?'':'disabled'}>${active?(dist>0?'Return to camp':'Finish return to camp'):'You are at camp'}</button></div></article>`;
   }
   function ensureCampReturnUI(){
-    const list=document.getElementById('locationList');if(!list||!window.state)return;list.querySelector('.main-camp-return-card')?.remove();list.insertAdjacentHTML('afterbegin',campReturnCard());document.getElementById('mapReturnMainCampBtn')?.addEventListener('click',()=>{if(typeof requestReturnToBase==='function')requestReturnToBase();});
+    const list=document.getElementById('locationList');if(!list||!state)return;list.querySelector('.main-camp-return-card')?.remove();list.insertAdjacentHTML('afterbegin',campReturnCard());document.getElementById('mapReturnMainCampBtn')?.addEventListener('click',()=>{if(typeof requestReturnToBase==='function')requestReturnToBase();});
   }
   function resupplyAtCamp(){
     if(state?.expedition?.active){alert('Return to camp before changing ammunition.');return;}
