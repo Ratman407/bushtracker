@@ -1,6 +1,6 @@
-/* BushTrack V0.7.12: repair corrupted permanent-camp ammunition balances. */
+/* BushTrack V0.7.13: repair corrupted permanent-camp ammunition balances. */
 (function(){
-  const PATCH_VERSION='0.7.12';
+  const PATCH_VERSION='0.7.13';
 
   function unifyPermanentCamp(){
     try{
@@ -26,11 +26,11 @@
   }
 
 
-  function recoverCampAmmo0712(){
+  function recoverCampAmmo0713(){
     try{
       if(!state)return;
       state.meta=state.meta||{};
-      if(state.meta.ammoRecovered0712)return;
+      if(state.meta.ammoRecovered0713)return;
       state.campStores=state.campStores||{};
       const main=state.campStores.main||(typeof freshStore==='function'?freshStore('Sheltered campsite'):{name:'Sheltered campsite',active:true,ammo:{}});
       main.name='Sheltered campsite';main.active=true;main.ammo=main.ammo||{};
@@ -61,12 +61,12 @@
       const floor={'22lr':75,'44lever':50,'3006':40,'223':(state.armoury?.owned||[]).includes('223')?20:0};
       for(const id of ids)main.ammo[id]=Math.max(Number(main.ammo[id]||0),Number(floor[id]||0));
       for(const id of ids)state.armoury.ammo[id]=Math.max(Number(state.armoury.ammo[id]||0),Number(main.ammo[id]||0));
-      state.meta.ammoRecovered0712=true;
+      state.meta.ammoRecovered0713=true;
       if(typeof addEvent==='function')addEvent('Ammunition records recovered','BushTrack checked the permanent camp, legacy armoury and automatic backups and restored the highest valid stored ammunition totals it could find.');
-    }catch(e){console.error('BushTrack ammo recovery 0.7.12',e);}
+    }catch(e){console.error('BushTrack ammo recovery 0.7.13',e);}
   }
 
-  function forcePermanentAmmoStore0712(){
+  function forcePermanentAmmoStore0713(){
     try{
       if(!state)return;
       state.campStores=state.campStores||{};
@@ -76,7 +76,7 @@
       for(const [id,n] of Object.entries(floor))if(Number(main.ammo[id]||0)<n)main.ammo[id]=n;
       state.armoury=state.armoury||{};state.armoury.ammo=state.armoury.ammo||{};
       for(const [id,n] of Object.entries(main.ammo))state.armoury.ammo[id]=Math.max(Number(state.armoury.ammo[id]||0),Number(n||0));
-    }catch(e){console.error('BushTrack permanent ammo store 0.7.12',e);}
+    }catch(e){console.error('BushTrack permanent ammo store 0.7.13',e);}
   }
 
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
@@ -116,9 +116,9 @@
     const field=document.getElementById('fieldReloadBtn');if(field&&!e.active)field.classList.add('hidden');
     const ret=document.getElementById('returnBaseBtn');if(ret&&!e.active)ret.classList.add('hidden');
   }
-  unifyPermanentCamp();recoverCampAmmo0712();forcePermanentAmmoStore0712();
-  const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();forcePermanentAmmoStore0712();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
+  unifyPermanentCamp();recoverCampAmmo0713();forcePermanentAmmoStore0713();
+  const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();forcePermanentAmmoStore0713();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
   document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>setTimeout(ensureCampAmmoButton,0));
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.12 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.12';setTimeout(()=>{unifyPermanentCamp();recoverCampAmmo0712();forcePermanentAmmoStore0712();save();render();setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
+  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.13 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.13';setTimeout(()=>{unifyPermanentCamp();recoverCampAmmo0713();forcePermanentAmmoStore0713();save();render();setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
 })();
