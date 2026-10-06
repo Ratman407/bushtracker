@@ -1,4 +1,4 @@
-const CACHE='bushtrack-v078-ammo-recovery-cache';
+const CACHE='bushtrack-v079-ammo-restore-cache';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css',
   './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js','./approachfix-v070.js','./animal-images-v071.js','./step-backfill-v072.js',
