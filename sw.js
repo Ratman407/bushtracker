@@ -1,4 +1,4 @@
-const CACHE='bushtrack-v0711-ammo-restore-cache';
+const CACHE='bushtrack-v0711-version-display-fix';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css',
   './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js','./approachfix-v070.js','./animal-images-v071.js','./step-backfill-v072.js',
@@ -16,7 +16,7 @@ async function textFrom(path){try{const r=await fetch(path,{cache:'no-store'});i
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;const url=new URL(event.request.url);
   if(url.pathname.endsWith('/version.json')){event.respondWith(fetch(event.request,{cache:'no-store'}).catch(()=>caches.match(event.request)));return;}
-  if(url.pathname.endsWith('/index.html')||url.pathname.endsWith('/step-backfill-v072.js')||url.pathname.endsWith('/animal-images-v071.js')){event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}return response;}).catch(()=>caches.match(event.request)));return;}
+  if(url.pathname.endsWith('/index.html')||url.pathname.endsWith('/step-backfill-v072.js')||url.pathname.endsWith('/animal-images-v071.js')||url.pathname.endsWith('/visual-v070.js')){event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}return response;}).catch(()=>caches.match(event.request)));return;}
   if(url.pathname.includes('/assets/visual/')){event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}return response;}).catch(()=>caches.match(event.request).then(r=>r||new Response('',{status:404,statusText:'Not Found'}))));return;}
   if(url.pathname.endsWith('/app-v06.js')){event.respondWith(Promise.all([textFrom('./app-v06.js'),textFrom('./hotfix-v061.js'),textFrom('./stats-v064.js'),textFrom('./updatefix-v070.js'),textFrom('./visual-v070.js'),textFrom('./visualfix-v070.js'),textFrom('./approachfix-v070.js')]).then(parts=>new Response(parts.join('\n\n'),{headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store'}})));return;}
   if(url.pathname.endsWith('/style-v06.css')){event.respondWith(Promise.all([textFrom('./style-v06.css'),textFrom('./style-v061.css'),textFrom('./visual-v070.css')]).then(parts=>new Response(parts.join('\n\n'),{headers:{'Content-Type':'text/css; charset=utf-8','Cache-Control':'no-store'}})));return;}
