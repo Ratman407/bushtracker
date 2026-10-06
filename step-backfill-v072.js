@@ -1,6 +1,6 @@
-/* BushTrack V0.7.3: missed-day backfill + Main Camp map return control. */
+/* BushTrack V0.7.4: missed-day backfill + camp return + camp ammo resupply. */
 (function(){
-  const PATCH_VERSION='0.7.3';
+  const PATCH_VERSION='0.7.4';
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
   function validPastDay(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&day<localDayKey();}
   function ensureBackfillUI(){
@@ -23,6 +23,30 @@
   function ensureCampReturnUI(){
     const list=document.getElementById('locationList');if(!list||!window.state)return;list.querySelector('.main-camp-return-card')?.remove();list.insertAdjacentHTML('afterbegin',campReturnCard());document.getElementById('mapReturnMainCampBtn')?.addEventListener('click',()=>{if(typeof requestReturnToBase==='function')requestReturnToBase();});
   }
+  function resupplyAtCamp(){
+    const e=state&&state.expedition||{};
+    if(e.active||Number(e.distanceFromBase||0)>0){alert('Return to camp before drawing fresh ammunition.');return;}
+    const id=e.weaponId;
+    const w=window.WEAPONS&&WEAPONS[id];
+    if(!id||!w){alert('Choose a loadout first.');return;}
+    const store=storeForKey();
+    const have=Math.max(0,Number(store.ammo?.[id]||0));
+    if(have<1){addEvent('No ammunition in camp',`There is no ${w.name} ammunition stored at ${currentBaseName()}.`);render();return;}
+    const room=Math.max(0,Number(w.capacity||0)-Number(e.loaded||0));
+    const moved=Math.min(room,have);
+    if(moved<1){addEvent('Rifle already loaded',`The ${w.name} is already full.`);render();return;}
+    store.ammo[id]=have-moved;e.loaded=Number(e.loaded||0)+moved;
+    addEvent('Reloaded at camp',`${moved} round${moved===1?'':'s'} drawn from ${currentBaseName()} stores and loaded into the ${w.name}. ${fmt(store.ammo[id])} round${store.ammo[id]===1?'':'s'} remain stored.`);
+    save();render();
+  }
+  function ensureCampAmmoButton(){
+    const prep=document.getElementById('prepareOutingBtn');if(!prep)return;
+    let b=document.getElementById('campAmmoBtn');
+    if(!b){b=document.createElement('button');b.id='campAmmoBtn';b.className='secondary';b.addEventListener('click',resupplyAtCamp);prep.insertAdjacentElement('afterend',b);}
+    const e=state&&state.expedition||{},id=e.weaponId,w=window.WEAPONS&&WEAPONS[id],atCamp=!e.active&&Number(e.distanceFromBase||0)<=0,stored=id?Math.max(0,Number(storeForKey().ammo?.[id]||0)):0,room=w?Math.max(0,Number(w.capacity||0)-Number(e.loaded||0)):0;
+    b.classList.toggle('hidden',!atCamp||!id);b.disabled=!atCamp||!id||stored<1||room<1;b.textContent=room<1?'Rifle already loaded':`Reload ${w?w.name:'rifle'} from camp (${fmt(stored)} stored)`;
+  }
+  const oldRenderOuting=window.renderOuting;if(typeof oldRenderOuting==='function')window.renderOuting=function(){oldRenderOuting.apply(this,arguments);ensureCampAmmoButton();};
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.3 CAMP RETURN';document.title='BushTrack V0.7.3';setTimeout(()=>{ensureBackfillUI();ensureCampReturnUI();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI};
+  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.4 CAMP AMMO FIX';document.title='BushTrack V0.7.4';setTimeout(()=>{ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
 })();
