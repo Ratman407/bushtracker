@@ -82,7 +82,7 @@
 
   function ensureTopbar(){
     const top=q('.topbar'); if(!top)return;
-    const eye=q('.eyebrow',top); if(eye)eye.textContent='V0.7 VISUAL UPDATE';
+    const eye=q('.eyebrow',top); if(eye&&!/^V0\.7\.\d+/i.test((eye.textContent||'').trim()))eye.textContent='V0.7 VISUAL UPDATE';
     const left=top.firstElementChild;
     if(left&&!q('.bt70-tagline',left)){
       const t=document.createElement('div');t.className='bt70-tagline';t.textContent='Explore • Hunt • Fish • Move';left.appendChild(t);
