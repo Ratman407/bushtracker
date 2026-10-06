@@ -1,6 +1,6 @@
-/* BushTrack V0.7.9: repair corrupted permanent-camp ammunition balances. */
+/* BushTrack V0.7.10: repair corrupted permanent-camp ammunition balances. */
 (function(){
-  const PATCH_VERSION='0.7.9';
+  const PATCH_VERSION='0.7.10';
 
   function unifyPermanentCamp(){
     try{
@@ -26,11 +26,11 @@
   }
 
 
-  function recoverCampAmmo078(){
+  function recoverCampAmmo0710(){
     try{
       if(!window.state)return;
       state.meta=state.meta||{};
-      if(state.meta.ammoRecovered079)return;
+      if(state.meta.ammoRecovered0710)return;
       state.campStores=state.campStores||{};
       const main=state.campStores.main||(typeof freshStore==='function'?freshStore('Sheltered campsite'):{name:'Sheltered campsite',active:true,ammo:{}});
       main.name='Sheltered campsite';main.active=true;main.ammo=main.ammo||{};
@@ -55,9 +55,15 @@
       for(const id of ids)main.ammo[id]=best[id];
       state.armoury=state.armoury||{};state.armoury.ammo=state.armoury.ammo||{};
       for(const id of ids)state.armoury.ammo[id]=Math.max(Number(state.armoury.ammo[id]||0),Number(main.ammo[id]||0));
-      // The old split-store bug could overwrite every recoverable copy with zero/2 rounds.\n      // Restore a conservative one-time floor matching the original permanent armoury,\n      // and one .223 pack when that rifle is owned. This is recovery, not a recurring refill.\n      const floor={'22lr':75,'44lever':50,'3006':40,'223':(state.armoury?.owned||[]).includes('223')?20:0};\n      for(const id of ids)main.ammo[id]=Math.max(Number(main.ammo[id]||0),Number(floor[id]||0));\n      for(const id of ids)state.armoury.ammo[id]=Math.max(Number(state.armoury.ammo[id]||0),Number(main.ammo[id]||0));\n      state.meta.ammoRecovered079=true;
+      // The old split-store bug could overwrite every recoverable copy with zero/2 rounds.
+      // Restore a conservative one-time floor matching the original permanent armoury,
+      // and one .223 pack when that rifle is owned. This is recovery, not a recurring refill.
+      const floor={'22lr':75,'44lever':50,'3006':40,'223':(state.armoury?.owned||[]).includes('223')?20:0};
+      for(const id of ids)main.ammo[id]=Math.max(Number(main.ammo[id]||0),Number(floor[id]||0));
+      for(const id of ids)state.armoury.ammo[id]=Math.max(Number(state.armoury.ammo[id]||0),Number(main.ammo[id]||0));
+      state.meta.ammoRecovered0710=true;
       if(typeof addEvent==='function')addEvent('Ammunition records recovered','BushTrack checked the permanent camp, legacy armoury and automatic backups and restored the highest valid stored ammunition totals it could find.');
-    }catch(e){console.error('BushTrack ammo recovery 0.7.9',e);}
+    }catch(e){console.error('BushTrack ammo recovery 0.7.10',e);}
   }
 
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
@@ -97,9 +103,9 @@
     const field=document.getElementById('fieldReloadBtn');if(field&&!e.active)field.classList.add('hidden');
     const ret=document.getElementById('returnBaseBtn');if(ret&&!e.active)ret.classList.add('hidden');
   }
-  unifyPermanentCamp();recoverCampAmmo078();
+  unifyPermanentCamp();recoverCampAmmo0710();
   const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
   document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>setTimeout(ensureCampAmmoButton,0));
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.9 AMMO RESTORE';document.title='BushTrack V0.7.9';setTimeout(()=>{unifyPermanentCamp();recoverCampAmmo078();save();render();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
+  const versionTag=document.querySelector('.topbar .eyebrow');if(versionTag)versionTag.textContent='V0.7.10 AMMO RESTORE';document.title='BushTrack V0.7.10';setTimeout(()=>{unifyPermanentCamp();recoverCampAmmo0710();save();render();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
 })();
