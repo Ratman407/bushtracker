@@ -1,6 +1,6 @@
-/* BushTrack V0.7.16: repair corrupted permanent-camp ammunition balances. */
+/* BushTrack V0.7.17: repair corrupted permanent-camp ammunition balances. */
 (function(){
-  const PATCH_VERSION='0.7.16';
+  const PATCH_VERSION='0.7.17';
 
   function unifyPermanentCamp(){
     try{
@@ -77,6 +77,38 @@
     }catch(e){console.error('BushTrack permanent ammo store 0.7.16',e);}
   }
 
+  function recoveryCandidates0717(){
+    const out=[];
+    try{
+      const raw=storageGet(LAST_GOOD_KEY);
+      if(raw){const d=JSON.parse(raw);if(validateState(d))out.push({kind:'last-good',label:'Last known good',date:d.meta?.lastSavedAt||'',reason:'Previous atomic save',data:d});}
+    }catch(e){}
+    try{
+      const bs=readBackups();
+      bs.forEach((b,i)=>out.push({kind:'backup',label:'Backup '+(i+1),date:b.createdAt||b.data?.meta?.lastSavedAt||'',reason:b.reason||'Automatic backup',data:b.data}));
+    }catch(e){}
+    return out;
+  }
+  function ensureEmergencyRecovery0717(){
+    if(document.getElementById('emergencyRecovery0717'))return;
+    const host=document.querySelector('[data-page="save"]')||document.getElementById('savePage')||document.body;
+    const card=document.createElement('section');card.id='emergencyRecovery0717';card.className='panel-card';
+    const rows=recoveryCandidates0717();
+    card.innerHTML='<div class="eyebrow">EMERGENCY SAVE RECOVERY</div><h3>Recover pre-bug save</h3><p class="micro">Nothing is restored until you tap a candidate below. Compare XP and total steps first.</p>'+
+      (rows.length?rows.map((r,i)=>'<button class="secondary" data-recover0717="'+i+'" style="display:block;width:100%;margin:8px 0;text-align:left"><strong>'+esc(r.label)+'</strong><br><span>'+esc(r.reason)+' • '+esc(formatDateTime(r.date))+' • LV '+(Math.floor(Number(r.data?.xp||0)/1000)+1)+' • '+fmt(r.data?.xp||0)+' XP • '+fmt(r.data?.totalSteps||0)+' total steps</span></button>').join(''):'<p><strong>No valid local recovery copies were found.</strong></p>');
+    host.prepend(card);
+    card.addEventListener('click',e=>{
+      const b=e.target.closest('[data-recover0717]');if(!b)return;
+      const r=recoveryCandidates0717()[Number(b.dataset.recover0717)];if(!r)return;
+      if(!confirm('Restore '+r.label+' from '+formatDateTime(r.date)+'?\n\nXP: '+fmt(r.data?.xp||0)+'\nTotal steps: '+fmt(r.data?.totalSteps||0)))return;
+      try{
+        state=migrateContentState(ensureEntityIds(ensureV6State(deepMerge(initialState(),JSON.parse(JSON.stringify(r.data))))));
+        addEvent('Emergency save recovered','Recovered '+r.label+' from '+formatDateTime(r.date)+'.','system');
+        save();render();alert('Recovered. Check your XP, steps, gear and map before doing anything else.');
+      }catch(err){alert('Recovery failed: '+(err.message||err));}
+    });
+  }
+
   function shortDate(day){try{return dateFromDayKey(day).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}catch(e){return day;}}
   function validPastDay(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&day<localDayKey();}
   function ensureBackfillUI(){
@@ -144,5 +176,5 @@
   const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();forcePermanentAmmoStore0716();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
   document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>{forcePermanentAmmoStore0716();save();setTimeout(()=>{ensureCampAmmoButton();},0);});
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.16 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.16';setTimeout(()=>{unifyPermanentCamp();recoverCampAmmo0716();forcePermanentAmmoStore0716();save();render();setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp};
+  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.17 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.17';setTimeout(()=>{setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();ensureEmergencyRecovery0717();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp,ensureEmergencyRecovery0717};
 })();
