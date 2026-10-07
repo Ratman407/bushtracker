@@ -101,7 +101,7 @@
   }
   function ensureEmergencyRecovery0717(refresh=false){
     const existing=document.getElementById('emergencyRecovery0717');if(existing){if(!refresh)return;existing.remove();}
-    const host=document.querySelector('[data-page="save"]')||document.getElementById('savePage')||document.body;
+    const host=document.querySelector('[data-page="save"]')||document.getElementById('savePage');if(!host)return;
     const card=document.createElement('section');card.id='emergencyRecovery0717';card.className='panel-card';
     const rows=recoveryCandidates0717();
     card.innerHTML='<div class="eyebrow">SAVE SAFETY</div><h3>Known-good backup & recovery</h3><p class="micro">Save the currently working game before future updates. Recovery copies are listed underneath.</p><button class="primary" id="knownGoodBackup0717" style="width:100%;margin:8px 0 14px">Back up this working save now</button>'+
