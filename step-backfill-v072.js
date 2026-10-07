@@ -77,6 +77,16 @@
     }catch(e){console.error('BushTrack permanent ammo store 0.7.16',e);}
   }
 
+  function makeKnownGoodBackup0717(){
+    try{
+      if(!state||!validateState(state)){alert('BushTrack cannot validate the current save, so no backup was written.');return;}
+      const ok=createBackup('KNOWN GOOD — manual working save');
+      if(ok){
+        alert('Known-good backup saved. Your current BushTrack progress is now in the rotating backup set.');
+        ensureEmergencyRecovery0717(true);
+      }else alert('Backup could not be written. Do not clear Safari data.');
+    }catch(e){alert('Backup failed: '+(e.message||e));}
+  }
   function recoveryCandidates0717(){
     const out=[];
     try{
@@ -89,14 +99,15 @@
     }catch(e){}
     return out;
   }
-  function ensureEmergencyRecovery0717(){
-    if(document.getElementById('emergencyRecovery0717'))return;
+  function ensureEmergencyRecovery0717(refresh=false){
+    const existing=document.getElementById('emergencyRecovery0717');if(existing){if(!refresh)return;existing.remove();}
     const host=document.querySelector('[data-page="save"]')||document.getElementById('savePage')||document.body;
     const card=document.createElement('section');card.id='emergencyRecovery0717';card.className='panel-card';
     const rows=recoveryCandidates0717();
-    card.innerHTML='<div class="eyebrow">EMERGENCY SAVE RECOVERY</div><h3>Recover pre-bug save</h3><p class="micro">Nothing is restored until you tap a candidate below. Compare XP and total steps first.</p>'+
+    card.innerHTML='<div class="eyebrow">SAVE SAFETY</div><h3>Known-good backup & recovery</h3><p class="micro">Save the currently working game before future updates. Recovery copies are listed underneath.</p><button class="primary" id="knownGoodBackup0717" style="width:100%;margin:8px 0 14px">Back up this working save now</button>'+
       (rows.length?rows.map((r,i)=>'<button class="secondary" data-recover0717="'+i+'" style="display:block;width:100%;margin:8px 0;text-align:left"><strong>'+esc(r.label)+'</strong><br><span>'+esc(r.reason)+' • '+esc(formatDateTime(r.date))+' • LV '+(Math.floor(Number(r.data?.xp||0)/1000)+1)+' • '+fmt(r.data?.xp||0)+' XP • '+fmt(r.data?.totalSteps||0)+' total steps</span></button>').join(''):'<p><strong>No valid local recovery copies were found.</strong></p>');
     host.prepend(card);
+    document.getElementById('knownGoodBackup0717')?.addEventListener('click',makeKnownGoodBackup0717);
     card.addEventListener('click',e=>{
       const b=e.target.closest('[data-recover0717]');if(!b)return;
       const r=recoveryCandidates0717()[Number(b.dataset.recover0717)];if(!r)return;
@@ -176,5 +187,5 @@
   const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){unifyPermanentCamp();forcePermanentAmmoStore0716();oldRender.apply(this,arguments);ensureCampAmmoButton();ensureCampReturnUI();};
   document.getElementById('prepareOutingBtn')?.addEventListener('click',()=>{forcePermanentAmmoStore0716();save();setTimeout(()=>{ensureCampAmmoButton();},0);});
   const oldRenderLocations=window.renderLocations;if(typeof oldRenderLocations==='function')window.renderLocations=function(){oldRenderLocations.apply(this,arguments);ensureCampReturnUI();};
-  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.17 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.17';setTimeout(()=>{setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();ensureEmergencyRecovery0717();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp,ensureEmergencyRecovery0717};
+  const setVersionTag=()=>{const tags=[...document.querySelectorAll('.eyebrow')];const versionTag=tags.find(el=>/^V0\.7/i.test((el.textContent||'').trim()));if(versionTag)versionTag.textContent='V0.7.17 AMMO RESTORE';};setVersionTag();document.title='BushTrack V0.7.17';setTimeout(()=>{setVersionTag();ensureBackfillUI();ensureCampReturnUI();ensureCampAmmoButton();ensureEmergencyRecovery0717();},0);window.BushTrack072={ensureBackfillUI,backfillSteps,ensureCampReturnUI,ensureCampAmmoButton,resupplyAtCamp,ensureEmergencyRecovery0717,makeKnownGoodBackup0717};
 })();
