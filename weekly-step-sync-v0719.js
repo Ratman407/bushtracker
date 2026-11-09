@@ -16,11 +16,11 @@
   }
   function parseRows(){
     const today=localDayKey(),allowed=new Set(Array.from({length:7},(_,i)=>addDaysKey(today,i-6)));
-    const parts=raw.split(/[,;](?=\\s*\\d{4}-\\d{2}-\\d{2}:)/).map(x=>x.trim()).filter(Boolean);
+    const parts=raw.split(/[,;](?=\s*\d{4}-\d{2}-\d{2}:)/).map(x=>x.trim()).filter(Boolean);
     if(!parts.length||parts.length>7)throw new Error('Send 1–7 dated daily step totals, separated by commas or semicolons.');
     const used=new Set(),rows=[];
     for(const item of parts){
-      const m=/^(\d{4}-\d{2}-\d{2}):(\d{1,6})$/.exec(item);
+      const m=/^(\d{4}-\d{2}-\d{2}):([\d,]{1,9})$/.exec(item);
       if(!m||!allowed.has(m[1])||used.has(m[1]))throw new Error('Invalid, duplicate or out-of-week date in Health import: '+item);
       const steps=Number(m[2].replace(/,/g,''));
       if(!Number.isSafeInteger(steps)||steps<0||steps>100000)throw new Error('Invalid step total for '+m[1]);
