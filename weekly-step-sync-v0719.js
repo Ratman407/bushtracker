@@ -16,13 +16,13 @@
   }
   function parseRows(){
     const today=localDayKey(),allowed=new Set(Array.from({length:7},(_,i)=>addDaysKey(today,i-6)));
-    const parts=raw.split(',').map(x=>x.trim()).filter(Boolean);
-    if(!parts.length||parts.length>7)throw new Error('Send 1–7 dated daily step totals, separated by commas.');
+    const parts=raw.split(/[,;](?=\\s*\\d{4}-\\d{2}-\\d{2}:)/).map(x=>x.trim()).filter(Boolean);
+    if(!parts.length||parts.length>7)throw new Error('Send 1–7 dated daily step totals, separated by commas or semicolons.');
     const used=new Set(),rows=[];
     for(const item of parts){
       const m=/^(\d{4}-\d{2}-\d{2}):(\d{1,6})$/.exec(item);
       if(!m||!allowed.has(m[1])||used.has(m[1]))throw new Error('Invalid, duplicate or out-of-week date in Health import: '+item);
-      const steps=Number(m[2]);
+      const steps=Number(m[2].replace(/,/g,''));
       if(!Number.isSafeInteger(steps)||steps<0||steps>100000)throw new Error('Invalid step total for '+m[1]);
       used.add(m[1]);rows.push({day:m[1],total:steps});
     }
@@ -68,10 +68,6 @@
           ledger.healthTotal=Number(ledger.credited||0);
         todayAdded=creditHealthTotal(current.total,{source:'shortcut-weekly',skipBackup:true});
         if(todayAdded!==current.delta)throw new Error('Today’s step claim did not match the expected increase.');
-      }
-      if(typeof evaluateConditioning==='function'){
-        // Re-check next day as usual; weekly history is now up to date.
-        // No forced conditioning reset or re-awarding of past milestones.
       }
       addEvent('Seven-day Health sync',
         fmt(historical+todayAdded)+' new steps recovered across '+changes.length+' day(s): '+fmt(historical)+' historical and '+fmt(todayAdded)+' today. No previous hunt progress was replayed.',
