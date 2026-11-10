@@ -1,7 +1,8 @@
 /* BushTrack V0.7.19 — optional seven-calendar-day Health sync via iPhone Shortcut.
    Format: ?sync7=2026-11-03:4500,2026-11-04:8300,... (up to seven calendar days including today).
    Values must be DAILY totals, not one running total across the week.
-   Never changes past outing state; today still uses the normal claim path. */
+   Late historical steps now advance the current active trail (or bank at camp).
+   Already credited steps still earn no duplicate XP/progress; today's normal claim path is unchanged. */
 (function(){
   const params0719=new URLSearchParams(location.search);
   if(!params0719.has('sync7'))return;
@@ -39,7 +40,7 @@
     if(!changes.length){report('7-day Health check complete: all supplied days already up to date. No steps added.');return;}
     if(!createBackup('Before 7-day Shortcut Health sync'))throw new Error('Could not create a safety backup. Import cancelled.');
     const snapshot=cloneJson(state);
-    let historical=0,todayAdded=0;
+    let historical=0,todayAdded=0,lateStepsApplied=0;
     try{
       state.stepLedger=state.stepLedger||{};
       for(const c of changes.filter(x=>x.day!==today)){
@@ -59,6 +60,22 @@
             previousHealthTotal:c.previous,healthTotal:c.total,creditedDelta:c.delta,historical:true,outingActive:false});
         historical+=c.delta;
       }
+      // Apply only newly recovered past-day steps to the CURRENT active trail.
+      // This does not rewind time, change past encounters, or replay completed hunts.
+      // The ordinary active-trail rules handle encounters, overflow and camp banking.
+      if(historical>0){
+        const outingWasActive=!!state.expedition?.active;
+        const activeBefore=cloneJson(state.active);
+        const huntBefore={id:state.hunt?.id,remaining:state.hunt?.remaining,stage:state.hunt?.stage};
+        applyStepsToActive(historical);
+        lateStepsApplied=historical;
+        if(Array.isArray(state.backend?.claimAudit))
+          state.backend.claimAudit.push({id:uid('weekCatchup'),at:new Date().toISOString(),day:today,
+            source:'shortcut-weekly-late-trail',creditedDelta:historical,historicalCatchup:true,
+            activeBefore,activeAfter:cloneJson(state.active),huntBefore,
+            huntAfter:{id:state.hunt?.id,remaining:state.hunt?.remaining,stage:state.hunt?.stage},
+            outingActive:outingWasActive,bankedAtCamp:!outingWasActive});
+      }
       const current=changes.find(x=>x.day===today);
       if(current){
         // Today's normal importer also moves the currently active outing.
@@ -70,11 +87,11 @@
         if(todayAdded!==current.delta)throw new Error('Today’s step claim did not match the expected increase.');
       }
       addEvent('Seven-day Health sync',
-        fmt(historical+todayAdded)+' new steps recovered across '+changes.length+' day(s): '+fmt(historical)+' historical and '+fmt(todayAdded)+' today. No previous hunt progress was replayed.',
+        fmt(historical+todayAdded)+' new steps recovered across '+changes.length+' day(s): '+fmt(historical)+' late steps routed to the current trail/camp and '+fmt(todayAdded)+' today. Past hunts were not replayed.',
         'steps');
       if(!save())throw new Error('Could not confirm the save after importing. Use Save → recovery if needed.');
       render();
-      report('7-day Health sync: +'+fmt(historical+todayAdded)+' steps ('+fmt(historical)+' previous days; '+fmt(todayAdded)+' today). Only missing steps were added.');
+      report('7-day Health sync: +'+fmt(historical+todayAdded)+' steps ('+fmt(lateStepsApplied)+' late steps to active trail/camp; '+fmt(todayAdded)+' today). Only missing steps were added.');
     }catch(e){
       state=snapshot;
       throw e;
