@@ -11,11 +11,11 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="style-v06.css" />
   <link rel="stylesheet" href="milestones-v0720.css" />
-  <title>BushTrack V0.7.20 MILESTONES</title>
+  <title>BushTrack V0.7.21 FITNESS DATA</title>
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar"><div><div class="eyebrow">V0.7.20 MILESTONES</div><h1>BushTrack</h1></div><div class="level-chip"><span id="levelText">LV 1</span><small id="xpText">0 XP</small></div></header>
+    <header class="topbar"><div><div class="eyebrow">V0.7.21 FITNESS DATA</div><h1>BushTrack</h1></div><div class="level-chip"><span id="levelText">LV 1</span><small id="xpText">0 XP</small></div></header>
     <section class="system-banner warning hidden" id="storageWarning"><div><strong>Save warning</strong><span id="storageWarningText">Safari storage reported a problem.</span></div><button class="secondary" onclick="document.querySelector('[data-tab=settings]').click()">Save tools</button></section>
     <section class="system-banner update hidden" id="updateBanner"><div><strong>Update available</strong><span id="updateBannerText">New BushTrack code is ready.</span></div><button class="secondary" id="reloadUpdateBtn">Reload</button></section>
     <main>
@@ -27,6 +27,27 @@
         <section class="section-title"><div><div class="eyebrow">REAL-WORLD PROGRESS</div><h2>Milestones & awards</h2></div></section>
         <p class="mile-intro">Your earned badges stay unlocked for good. Tap <strong>Claim Reward</strong> to collect XP and cash. Existing step history counts. Distance and weight unlock when their Health data is connected.</p>
         <div id="milestoneSummary" class="mile-summary">Checking achievements…</div>
+        <details class="panel-card mile-health-panel">
+          <summary>Health measurements <span>Walking distance &amp; weight</span></summary>
+          <p class="mile-health-help">Enter actual Apple Health measurements here while we connect the iPhone Shortcut. Measurements stay in your existing BushTrack save. Each date can be updated without adding the same distance twice.</p>
+          <div class="mile-health-section">
+            <strong>Daily walking + running distance</strong>
+            <div class="mile-health-form"><label>Date<input id="fitnessDistDay" type="date"></label><label>Kilometres<input id="fitnessDistKm" type="number" min="0" max="150" step="0.01" inputmode="decimal" placeholder="e.g. 3.75"></label></div>
+            <button type="button" id="fitnessRecordDistance" class="secondary mile-health-button">Record daily distance</button>
+          </div>
+          <div class="mile-health-section">
+            <strong>Starting weight — set once</strong>
+            <div class="mile-health-form"><label>Baseline date<input id="fitnessBaselineDay" type="date"></label><label>Starting kg<input id="fitnessBaselineKg" type="number" min="50" max="300" step="0.01" inputmode="decimal" placeholder="Starting weight"></label></div>
+            <button type="button" id="fitnessSetBaseline" class="secondary mile-health-button">Save starting weight</button>
+          </div>
+          <div class="mile-health-section">
+            <strong>RENPHO / Apple Health weigh-in</strong>
+            <div class="mile-health-form"><label>Date<input id="fitnessWeightDay" type="date"></label><label>Current kg<input id="fitnessWeightKg" type="number" min="50" max="300" step="0.01" inputmode="decimal" placeholder="Current weight"></label></div>
+            <button type="button" id="fitnessRecordWeight" class="secondary mile-health-button">Record weigh-in</button>
+            <p class="mile-health-help">Weight milestones require two separate dated readings below the target; existing badges stay unlocked if weight later increases.</p>
+          </div>
+          <p id="fitnessDataStatus" class="mile-health-status" role="status">No distance or weight entered yet.</p>
+        </details>
         <div id="milestoneSections"></div>
       </section>
       <section class="tab-page" data-page="settings"><section class="section-title"><div><div class="eyebrow">SETTINGS & SAVE DATA</div><h2>Keep the bastard safe</h2></div></section><section class="panel-card"><div class="card-head"><div><div class="eyebrow">SAVE HEALTH</div><h3>Your BushTrack save</h3></div><strong class="save-health" id="saveHealthText">Healthy</strong></div><div class="status-grid"><div><span>Last saved</span><strong id="lastSavedText">—</strong></div><div><span>Last backup</span><strong id="lastBackupText">—</strong></div><div><span>Save format</span><strong id="schemaText">V5</strong></div><div><span>Content table</span><strong id="contentVersionText">C1</strong></div><div><span>Storage</span><strong id="storageProviderText">local</strong></div><div><span>Last claim</span><strong id="lastClaimText">—</strong></div></div><div class="save-id"><span>Save ID</span><code id="saveIdText">—</code></div><p class="micro" id="storageProblemText">No storage errors detected.</p><div class="button-grid"><button class="secondary" id="backupNowBtn">Backup now</button><button class="primary" id="exportSaveBtn">Export to Files</button><button class="secondary" id="importSaveBtn">Import backup</button></div><input type="file" id="importFileInput" accept=".json,application/json" class="hidden" /></section><section class="panel-card"><div class="card-head"><div><div class="eyebrow">TODAY'S STEPS</div><h3>Incremental Health imports</h3></div></div><div class="claim-row"><input id="correctStepsInput" inputmode="numeric" pattern="[0-9]*" placeholder="Current Health total" aria-label="Current Health step total" /><button class="secondary" id="applyCorrectionBtn">Apply total</button></div><button class="danger-outline full-btn" id="undoClaimBtn">Undo last step claim</button></section><section class="panel-card"><div class="card-head"><div><div class="eyebrow">CONDITIONING BASELINE</div><h3>Start from your real normal week</h3></div></div><div class="claim-row"><input id="baselineInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 4418" aria-label="Weekly daily-average baseline" /><button class="secondary" id="setBaselineBtn">Set baseline</button></div><p class="micro" id="baselineHelp">Permanent tiers only move upward.</p></section><section class="panel-card"><div class="card-head"><div><div class="eyebrow">DIAGNOSTICS</div><h3>Update & fault tools</h3></div></div><div class="button-grid"><button class="secondary" id="exportDiagBtn">Export diagnostics</button><button class="secondary" id="checkUpdateBtn">Check for update</button><button class="secondary" id="runSelfTestsBtn">Run self-tests</button><button class="secondary" onclick="location.href='fallback-v04.html'">Open V0.4 fallback</button></div><p class="micro" id="selfTestText">Not run yet</p><button class="danger-outline full-btn" id="restoreLastGoodBtn">Restore last-known-good save</button><details class="dev-tools"><summary>Field-test tools</summary><label class="toggle-row"><span>Enable developer tools</span><input type="checkbox" id="devModeToggle"></label><div id="devToolPanel" class="hidden"><button class="secondary full-btn" id="forceEncounterBtn">Force current hunt encounter</button></div></details></section><section class="panel-card danger-zone"><div class="card-head"><div><div class="eyebrow">RESET TOOLS</div><h3>Different levels of violence</h3></div></div><div class="stack-actions"><button class="secondary" id="resetHuntBtn">Reset current hunt only</button><button class="secondary" id="resetWorldBtn">Reset explored world, keep progression</button><button class="danger" id="fullWipeBtn">Wipe absolutely everything</button></div></section></section>
@@ -54,5 +75,6 @@
   <script src="missed-hunt-v0718.js"></script>
   <script src="weekly-step-sync-v0719.js"></script>
   <script src="milestones-v0720.js"></script>
+  <script src="fitness-entry-v0721.js"></script>
 </body>
 </html>
