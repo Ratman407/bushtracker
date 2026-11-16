@@ -1,7 +1,7 @@
-const CACHE='bushtrack-v0721-fitness-data';
+const CACHE='bushtrack-v0722-distance-sync';
 const FILES=[
   './','./index.html','./style-v06.css','./style-v061.css','./visual-v070.css','./milestones-v0720.css',
-  './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js','./approachfix-v070.js','./animal-images-v071.js','./step-backfill-v072.js','./missed-hunt-v0718.js','./weekly-step-sync-v0719.js','./milestones-v0720.js','./fitness-entry-v0721.js',
+  './app-v06.js','./hotfix-v061.js','./stats-v064.js','./updatefix-v070.js','./visual-v070.js','./visualfix-v070.js','./approachfix-v070.js','./animal-images-v071.js','./step-backfill-v072.js','./missed-hunt-v0718.js','./distance-sync-v0722.js','./weekly-step-sync-v0719.js','./milestones-v0720.js','./fitness-entry-v0721.js',
   './manifest.webmanifest','./version.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png',
   './fallback-v05.html','./style-v05.css','./app-v05.js','./fallback-v04.html','./style-v04.css','./app-v04.js',
   './assets/visual/bass.webp','./assets/visual/camp-sunset.webp','./assets/visual/country-map.webp',
