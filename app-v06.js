@@ -1,4 +1,4 @@
-const APP_VERSION = '0.7.22';
+const APP_VERSION = '0.7.23';
 const SCHEMA_VERSION = 6;
 const CONTENT_VERSION = 2;
 const STORAGE_KEY = 'bushtrack-v06';
