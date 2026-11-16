@@ -1,6 +1,6 @@
 {
-  "version": "0.7.21",
+  "version": "0.7.22",
   "schema": 6,
   "content": 2,
-  "build": "2026-11-16-v0721-private-fitness-entry"
+  "build": "2026-11-16-v0722-distance-sync"
 }
