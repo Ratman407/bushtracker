@@ -13,7 +13,8 @@
     return f;
   }
   function recalc(f){
-    f.walkingDistanceKm=Math.round(Object.values(f.distanceDays).reduce((sum,v)=>sum+(Number(v)||0),0)*100)/100;
+    const hasDistance=Object.keys(f.distanceDays).length>0;
+    f.walkingDistanceKm=hasDistance?Math.round(Object.values(f.distanceDays).reduce((sum,v)=>sum+(Number(v)||0),0)*100)/100:null;
     const baseline=Number(f.weightBaselineKg);
     const history=Object.entries(f.weightReadings).filter(([d,v])=>validDay(d)&&Number.isFinite(Number(v))).sort((a,b)=>a[0].localeCompare(b[0]));
     const good=Number.isFinite(baseline)&&baseline>=50&&baseline<=300;
@@ -38,7 +39,7 @@
       const f=data();work(f);recalc(f);
       addEvent('Fitness milestone data',label,'fitness');
       render();if(!save())throw Error('Could not save the measurements.');
-      notice('Updated: '+f.walkingDistanceKm.toFixed(2)+' km walked'+(f.latestWeightKg!==null?' · last weight '+f.latestWeightKg.toFixed(2)+' kg':'')+'.',false);
+      notice('Updated: '+(f.walkingDistanceKm===null?'Distance not entered':f.walkingDistanceKm.toFixed(2)+' km walked')+(f.latestWeightKg!==null?' · last weight '+f.latestWeightKg.toFixed(2)+' kg':'')+'.',false);
     }catch(e){state=old;render();notice(e.message||String(e),true);}
   }
   function readNumber(id,min,max){
@@ -76,7 +77,7 @@
       mutate('Weigh-in '+d, f=>{f.weightReadings[d]=kg;});
     });
     const baseline=state.fitness?.weightBaselineKg;
-    if(baseline!=null&&byId('fitnessDataStatus'))notice('Starting weight '+Number(baseline).toFixed(2)+' kg · '+Number(state.fitness.walkingDistanceKm||0).toFixed(2)+' km tracked.',false);
+    if(baseline!=null&&byId('fitnessDataStatus'))notice('Starting weight '+Number(baseline).toFixed(2)+' kg · '+(state.fitness.walkingDistanceKm==null?'Distance not entered':Number(state.fitness.walkingDistanceKm).toFixed(2)+' km tracked.'),false);
   }
   initialise();
 })();
