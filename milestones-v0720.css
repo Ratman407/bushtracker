@@ -40,3 +40,17 @@
   .mile-card{padding:13px;}
   .mile-card-footer{font-size:12px;}
 }
+
+/* V0.7.21: private daily Health measurements */
+.mile-health-panel{margin-bottom:20px;padding:14px 16px;}
+.mile-health-panel>summary{font-weight:800;color:var(--text);cursor:pointer;line-height:1.4;}
+.mile-health-panel>summary span{display:block;color:var(--muted);font-size:11px;font-weight:500;margin:3px 0 0 15px;}
+.mile-health-help{color:var(--muted);font-size:12px;line-height:1.5;margin:10px 0;}
+.mile-health-section{border-top:1px solid var(--line);padding:14px 0;}
+.mile-health-section>strong{font-size:13px;display:block;margin:0 0 9px;}
+.mile-health-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mile-health-form label{font-size:11px;display:block;color:var(--muted);min-width:0;}
+.mile-health-form input{display:block;box-sizing:border-box;width:100%;font-size:14px;margin-top:5px;padding:10px 8px;}
+.mile-health-button{width:100%;margin-top:10px;padding:10px;}
+.mile-health-status{font-size:12px;color:#c3d5b4;margin:3px 0 0;}
+@media(max-width:450px){.mile-health-form{grid-template-columns:1fr;}}
