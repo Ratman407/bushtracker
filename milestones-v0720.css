@@ -54,3 +54,12 @@
 .mile-health-button{width:100%;margin-top:10px;padding:10px;}
 .mile-health-status{font-size:12px;color:#c3d5b4;margin:3px 0 0;}
 @media(max-width:450px){.mile-health-form{grid-template-columns:1fr;}}
+
+/* V0.7.23: one-off historical kilometre backfill */
+.mile-history-panel{margin-bottom:20px;}
+.mile-history-input{box-sizing:border-box;display:block;width:100%;min-height:124px;resize:vertical;border-radius:12px;background:#0b110c;border:1px solid var(--line);color:var(--text);padding:12px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;margin:7px 0 12px;overflow-wrap:anywhere;}
+.mile-history-label{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-top:15px;}
+.mile-history-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0;}
+.mile-history-buttons button{padding:12px 8px;font-size:12px;}
+.mile-history-buttons button:disabled{opacity:.45;cursor:not-allowed;}
+.mile-history-panel code{font-size:11px;overflow-wrap:anywhere;color:#dbe8be;}
