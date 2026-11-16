@@ -1,0 +1,42 @@
+/* BushTrack V0.7.20 — milestones and claimable rewards */
+.bottom-nav{grid-template-columns:repeat(6,minmax(0,1fr));}
+.bottom-nav .nav-btn{position:relative;min-width:0;padding:10px 2px;}
+.mile-nav-count{position:absolute;top:-5px;right:0;min-width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#b5cb80;color:#10170d;font-size:10px;font-weight:900;padding:0 4px;}
+.mile-nav-count[hidden]{display:none;}
+.mile-intro{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.5;}
+.mile-summary{padding:12px 14px;border:1px solid #50633c;background:#202a1d;border-radius:12px;margin:0 0 18px;color:#d8e4c7;font-weight:750;font-size:13px;}
+.mile-group{margin-bottom:25px;}
+.mile-group-title{display:flex;gap:10px;align-items:center;margin-bottom:6px;}
+.mile-group-title span{font-size:25px;}
+.mile-group-title h3{margin:0;font-size:19px;}
+.mile-group-desc{color:var(--muted);font-size:12px;line-height:1.45;margin:0 0 12px;}
+.mile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.mile-card{min-width:0;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,#1b251c,#111812);padding:14px;display:flex;flex-direction:column;gap:9px;}
+.mile-card.mile-earned{border-color:#8fa85d;box-shadow:inset 0 0 0 1px rgba(181,203,128,.12);}
+.mile-card.mile-claimed{border-color:#445d42;background:linear-gradient(180deg,#1b2a1e,#111a13);}
+.mile-card-main{display:flex;align-items:center;gap:10px;min-width:0;}
+.mile-seal{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border:1px solid #49523c;background:radial-gradient(circle at top,#414a30,#20291e);border-radius:50%;font-size:21px;filter:grayscale(1);opacity:.55;}
+.mile-earned .mile-seal,.mile-claimed .mile-seal{filter:none;opacity:1;border-color:#b5cb80;}
+.mile-details{min-width:0;}
+.mile-title{font-size:14px;font-weight:850;line-height:1.25;}
+.mile-target{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.01em;}
+.mile-earned .mile-target{color:#c9dc9c;}
+.mile-progress{height:7px;background:#0a100b;border-radius:99px;overflow:hidden;border:1px solid #334033;}
+.mile-progress span{display:block;height:100%;background:#829b5a;border-radius:99px;}
+.mile-card-footer{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;font-size:11px;line-height:1.4;}
+.mile-card-footer>span{color:var(--muted);}
+.mile-card-footer strong{color:#d8e4c7;text-align:right;font-weight:850;}
+.mile-date{font-size:10px;color:var(--muted);}
+.mile-claim{width:100%;margin-top:auto;}
+.mile-claimed-label{text-align:center;font-size:12px;color:#b3d095;font-weight:800;margin-top:auto;padding:10px;}
+.mile-toast{position:fixed;z-index:100;left:12px;right:12px;bottom:calc(79px + env(safe-area-inset-bottom));background:#253723;border:1px solid #b5cb80;border-radius:15px;padding:12px 13px;box-shadow:0 8px 30px rgba(0,0,0,.45);color:#eef5e5;}
+.mile-toast strong{font-size:13px;display:block;margin-bottom:4px;}
+.mile-toast p{font-size:12px;line-height:1.4;margin:0 0 9px;}
+.mile-toast-actions{display:flex;gap:8px;}
+.mile-toast-actions button{flex:1;padding:9px;font-size:12px;}
+@media(max-width:600px){
+  .mile-grid{grid-template-columns:1fr;}
+  .bottom-nav .nav-btn{font-size:11px;padding:10px 0;}
+  .mile-card{padding:13px;}
+  .mile-card-footer{font-size:12px;}
+}
